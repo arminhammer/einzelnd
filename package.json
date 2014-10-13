@@ -1,0 +1,35 @@
+{
+  "name": "einzelnd",
+  "version": "0.0.1",
+  "description": "A CLI app to download web resources into single-file archives",
+  "private": true,
+  "bin": {
+    "einzelnd": "./bin/einzelnd"
+  },
+  "scripts": {
+    "test": "mocha -R spec"
+  },
+  "author": {
+    "name": "Armin Graf",
+    "email": "arminhammer@gmail.com",
+    "url": "https://github.com/arminhammer"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arminhammer/einzelnd"
+  },
+  "license": "MIT",
+  "bugs": "https://github.com/arminhammer/einzelnd/issues",
+  "dependencies": {
+    "commander": "~2.0.0"
+  },
+  "devDependencies": {
+        "grunt": "~0.4.5",
+  		"load-grunt-config" : "~0.13.1",
+  		"load-grunt-tasks" : "~0.6.0",
+  		"grunt-newer": "~0.7.0",
+  		"grunt-contrib-uglify" : "~0.5.0",
+  		"grunt-contrib-clean" : "~0.5.0",
+  		"grunt-contrib-watch" : "~0.5.0"
+  }
+}
