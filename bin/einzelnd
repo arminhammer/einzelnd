@@ -3,8 +3,7 @@
 
 var program  = require('commander');
 
-var get = require('../cmds/get.js')(program);
-
+require('../cmds/get.js')(program);
 
 program
 	.version('0.0.1');
