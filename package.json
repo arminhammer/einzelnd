@@ -21,7 +21,8 @@
   "license": "MIT",
   "bugs": "https://github.com/arminhammer/einzelnd/issues",
   "dependencies": {
-    "commander": "~2.0.0"
+    "commander": "~2.0.0",
+    "promise": "~6.0.0"
   },
   "devDependencies": {
     "grunt": "~0.4.5",
