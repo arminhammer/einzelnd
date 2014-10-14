@@ -37,65 +37,27 @@ module.exports = function(program) {
 
 				.then(function(body) {
 
-					embedImages(body)
+					return embedImages(body);
 
-						.then(function(data) {
+				})
 
-							writeFile(filename, data)
+				.then(function(data) {
 
-								.then(function () {
+					writeFile(filename, data)
 
-									console.log("Finished writing %s", filename);
+						.then(function () {
 
-								});
+							console.log("Finished writing %s", filename);
 
-						}),
+						});
 
-						function (error) {
+				}),
 
-							console.log("Error caught: %s", error);
+				function (error) {
 
-						};
+					console.log("Error caught: %s", error);
 
-				});
-
-
-
-
-			/*
-			 function getPage(requestObject, callback) {
-
-			 return httpGet(requestObject).then(writeFile)
-			 }
-			 */
-
-			/*
-			 http.get({ host: urlObj.host, path: urlObj.pathname }, function(res) {
-
-			 var body;
-			 res.on('data', function(chunk) {
-			 body += chunk;
-			 });
-
-			 res.on('end', function() {
-
-
-
-			 });
-
-			 });
-			 */
-
-			//.pipe(fs.createWriteStream(tempLocation));
-
-
-			/*
-			 console.log("Getting page %s", urlArg);
-			 fs.createReadStream(tempLocation).pipe(fs.createWriteStream(filename));
-			 fs.unlink(tempLocation, function() {
-			 console.log("Deleted %s", tempLocation);
-			 })
-			 */
+				};
 
 		});
 
@@ -147,27 +109,42 @@ module.exports = function(program) {
 
 			var $ = cheerio.load(body);
 
-			$('img').each(function (i, elem) {
+			console.log("Starting image promise");
+			getDataURI($, $('img'))
+				.then(resolve(body));
+			console.log("Ending image promise");
+		});
+
+	}
+
+	function getDataURI($, tag) {
+
+		return new Promise(function (resolve, reject) {
+
+			tag.each(function (i, elem) {
 				var img = $(this);
 				var imageURL = img.attr('src');
 				console.log(imageURL);
 
-				requestGet(img.attr('src'))
+				var imgDataUri = requestGet(img.attr('src'))
 					.then(function (imageBody) {
 
 						var imageData = new Buffer(imageBody).toString('base64');
 						console.log("Type: " + mime.lookup(imageURL));
 						console.log("Size: " + imageData.length);
 						var dataUri = util.format("data:%s;base64,%s", mime.lookup(imageURL), imageData);
-						img.attr('src', dataUri);
+						return dataUri;
 
-					}),
+					},
 					function (error) {
 
 						console.log("Error caught: %s", error);
 						return reject(error);
 
-					};
+					});
+
+				img.attr('src', imgDataUri);
+
 			});
 
 			resolve($.html());
