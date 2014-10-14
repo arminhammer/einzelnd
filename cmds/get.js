@@ -12,8 +12,8 @@ module.exports = function(program) {
 	var url = require('url');
 	var mime = require('mime');
 	var util = require('util');
-    var http = require('http');
-    var Promise = require('promise');
+	var http = require('http');
+	var Promise = require('promise');
 
 	program
 		.command('get')
@@ -33,86 +33,57 @@ module.exports = function(program) {
 
 			var html = "";
 
-            requestGet(urlArg, true).then(function (data) {
+			requestGet(urlArg, true)
+				.then(function (response) {
 
-                writeFile(filename, data).then(function() {
-                    console.log("Finished writing %s", filename);
-                }, function(error) {
-                    console.log("Error writing file: %s", error);
-                });
+					return response;
 
-            }, function (err) {
+				})
+				.then(function(data) {
 
-                console.error("%s; %s", err.message, urlArg);
-                console.log("%j", err.res.statusCode);
+					writeFile(filename, data).then(function () {
 
-            });
+						console.log("Finished writing %s", filename);
 
-            function requestGet(url) {
+					}, function (error) {
 
-                return new Promise(function (resolve, reject) {
+						console.log("Error caught: %s", error);
 
-                    request({ url: url }, function (error, response, body) {
+					})
 
-                        if (error) {
+				}),
+				function (error) {
 
-                            return reject(error);
+					console.log("Error caught: %s", error);
 
-                        } else if (response.statusCode !== 200) {
-
-                            error = new Error("Unexpected status code: " + response.statusCode);
-                            error.res = response;
-                            return reject(error);
-
-                        }
-
-                        resolve(body);
-
-                    });
-                });
-            }
-
-            function writeFile(filename, body) {
-
-                return new Promise(function (resolve, reject) {
-
-                    fs.writeFile(filename, body, function (error) {
-
-                        if (error) {
-
-                            return reject(error);
-
-                        }
-
-                        resolve();
-                    });
-
-                });
-            }
-
-            /*
-            function getPage(requestObject, callback) {
-
-                return httpGet(requestObject).then(writeFile)
-            }
-            */
-
-            /*
-            http.get({ host: urlObj.host, path: urlObj.pathname }, function(res) {
-
-                var body;
-                res.on('data', function(chunk) {
-                    body += chunk;
-                });
-
-                res.on('end', function() {
+				};
 
 
 
-                });
 
-            });
-            */
+			/*
+			 function getPage(requestObject, callback) {
+
+			 return httpGet(requestObject).then(writeFile)
+			 }
+			 */
+
+			/*
+			 http.get({ host: urlObj.host, path: urlObj.pathname }, function(res) {
+
+			 var body;
+			 res.on('data', function(chunk) {
+			 body += chunk;
+			 });
+
+			 res.on('end', function() {
+
+
+
+			 });
+
+			 });
+			 */
 
 			//.pipe(fs.createWriteStream(tempLocation));
 
@@ -127,6 +98,47 @@ module.exports = function(program) {
 
 		});
 
+	function requestGet(url) {
+
+		return new Promise(function (resolve, reject) {
+
+			request({ url: url }, function (error, response, body) {
+
+				if (error) {
+
+					return reject(error);
+
+				} else if (response.statusCode !== 200) {
+
+					error = new Error("Unexpected status code: " + response.statusCode);
+					error.res = response;
+					return reject(error);
+
+				}
+
+				resolve(body);
+
+			});
+		});
+	}
+
+	function writeFile(filename, body) {
+
+		return new Promise(function (resolve, reject) {
+
+			fs.writeFile(filename, body, function (error) {
+
+				if (error) {
+
+					return reject(error);
+
+				}
+
+				resolve();
+			});
+
+		});
+	}
 
 	function embedImages(pageURL, html, callback) {
 

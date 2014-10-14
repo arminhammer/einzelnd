@@ -1,0 +1,4 @@
+default:
+    - 'newer:uglify'
+    - 'clean'
+    - 'watch'
