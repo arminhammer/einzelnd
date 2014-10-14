@@ -33,30 +33,31 @@ module.exports = function(program) {
 
 			var html = "";
 
-			requestGet(urlArg, true)
-				.then(function (response) {
+			requestGet(urlArg)
 
-					return response;
+				.then(function(body) {
 
-				})
-				.then(function(data) {
+					embedImages(body)
 
-					writeFile(filename, data).then(function () {
+						.then(function(data) {
 
-						console.log("Finished writing %s", filename);
+							writeFile(filename, data)
 
-					}, function (error) {
+								.then(function () {
 
-						console.log("Error caught: %s", error);
+									console.log("Finished writing %s", filename);
 
-					})
+								});
 
-				}),
-				function (error) {
+						}),
 
-					console.log("Error caught: %s", error);
+						function (error) {
 
-				};
+							console.log("Error caught: %s", error);
+
+						};
+
+				});
 
 
 
@@ -140,35 +141,39 @@ module.exports = function(program) {
 		});
 	}
 
-	function embedImages(pageURL, html, callback) {
+	function embedImages(body) {
 
-		(function() {
-			request({ uri: pageURL }, function (error, response, body) {
+		return new Promise(function (resolve, reject) {
 
-				var $ = cheerio.load(body);
+			var $ = cheerio.load(body);
 
-				$('img').each(function (i, elem) {
-					var img = $(this);
-					var imageURL = img.attr('src');
-					console.log(imageURL);
+			$('img').each(function (i, elem) {
+				var img = $(this);
+				var imageURL = img.attr('src');
+				console.log(imageURL);
 
+				requestGet(img.attr('src'))
+					.then(function (imageBody) {
 
-					request({ uri: img.attr('src') }, function (imageError, imageResponse, imageBody) {
 						var imageData = new Buffer(imageBody).toString('base64');
 						console.log("Type: " + mime.lookup(imageURL));
 						console.log("Size: " + imageData.length);
 						var dataUri = util.format("data:%s;base64,%s", mime.lookup(imageURL), imageData);
-						img.attr('src');
-					});
+						img.attr('src', dataUri);
 
-				});
+					}),
+					function (error) {
 
-				html = $.html();
+						console.log("Error caught: %s", error);
+						return reject(error);
 
+					};
 			});
-		})();
 
-		callback();
+			resolve($.html());
+
+		});
+
 	}
 
 };
