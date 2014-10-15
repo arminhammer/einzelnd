@@ -5,152 +5,187 @@
 
 module.exports = function(program) {
 
-	var request = require('request');
-	var cheerio = require('cheerio');
-	var fs = require('fs');
-	var os = require('os');
-	var url = require('url');
-	var mime = require('mime');
-	var util = require('util');
-	var http = require('http');
-	var Promise = require('promise');
+    var cheerio = require('cheerio');
+    var os = require('os');
+    var url = require('url');
+    var mime = require('mime');
+    var util = require('util');
+    var http = require('http');
+    var Promise = require('bluebird');
 
-	program
-		.command('get')
-		.version('0.0.1')
-		.description('Download a web page as a single-file archive')
-		.action(function(urlArg){
+    var fs = Promise.promisifyAll(require('fs'), { suffix: "PS" });
+    var request = Promise.promisifyAll(require('request'), { suffix: "PS" });
 
-			var urlObj = url.parse(urlArg);
+    program
+        .command('get')
+        .version('0.0.1')
+        .description('Download a web page as a single-file archive')
+        .action(function(urlArg){
 
-			// Determine the filename of the url.  If it is not in the path, assume index.html.
-			var filename = urlObj.pathname.slice(urlObj.pathname.lastIndexOf('/')+1);
-			if(filename == "") {
-				filename = "index.html";
-			}
+            var urlObj = url.parse(urlArg);
 
-			console.log(filename);
+            // Determine the filename of the url.  If it is not in the path, assume index.html.
+            var filename = urlObj.pathname.slice(urlObj.pathname.lastIndexOf('/')+1);
+            if(filename == "") {
+                filename = "index.html";
+            }
 
-			var html = "";
+            console.log(filename);
 
-			requestGet(urlArg)
+            var html = "";
 
-				.then(function(body) {
+            request.getPS(urlArg)
+                .then(function(data) {
+                    return embedImages(data);
+                })
+                .then(function(response) {
+                    fs.writeFilePS(filename, response);
+                })
+                .then(function() {
+                    console.log("Finished writing %s", filename);
+                });
 
-					return embedImages(body);
+            function embedImages(body) {
 
-				})
+                var $ = cheerio.load(body.toString());
 
-				.then(function(data) {
+                console.log("Loading $");
 
-					writeFile(filename, data)
+                return request.getPS("http://google.com").then(function (google) {
+                    console.log("Got google.com");
+                    return google;
+                });
 
-						.then(function () {
+            }
 
-							console.log("Finished writing %s", filename);
+            /*
+             requestGet(urlArg)
 
-						});
+             .then(function(body) {
 
-				}),
+             return embedImages(body);
 
-				function (error) {
+             })
 
-					console.log("Error caught: %s", error);
+             .then(function(data) {
 
-				};
+             writeFile(filename, data)
 
-		});
+             .then(function () {
 
-	function requestGet(url) {
+             console.log("Finished writing %s", filename);
 
-		return new Promise(function (resolve, reject) {
+             });
 
-			request({ url: url }, function (error, response, body) {
+             }),
 
-				if (error) {
+             function (error) {
 
-					return reject(error);
+             console.log("Error caught: %s", error);
 
-				} else if (response.statusCode !== 200) {
+             };
+             */
+        });
 
-					error = new Error("Unexpected status code: " + response.statusCode);
-					error.res = response;
-					return reject(error);
+    function buildHTML() {
 
-				}
+        return new Promise(function (resolve, reject) {
 
-				resolve(body);
+            console.log()
 
-			});
-		});
-	}
+        });
+    }
+    function requestGet(url) {
 
-	function writeFile(filename, body) {
+        return new Promise(function (resolve, reject) {
 
-		return new Promise(function (resolve, reject) {
+            request({ url: url }, function (error, response, body) {
 
-			fs.writeFile(filename, body, function (error) {
+                if (error) {
 
-				if (error) {
+                    return reject(error);
 
-					return reject(error);
+                } else if (response.statusCode !== 200) {
 
-				}
+                    error = new Error("Unexpected status code: " + response.statusCode);
+                    error.res = response;
+                    return reject(error);
 
-				resolve();
-			});
+                }
 
-		});
-	}
+                resolve(body);
 
-	function embedImages(body) {
+            });
+        });
+    }
 
-		return new Promise(function (resolve, reject) {
+    function writeFile(filename, body) {
 
-			var $ = cheerio.load(body);
+        return new Promise(function (resolve, reject) {
 
-			console.log("Starting image promise");
-			getDataURI($, $('img'))
-				.then(resolve(body));
-			console.log("Ending image promise");
-		});
+            fs.writeFile(filename, body, function (error) {
 
-	}
+                if (error) {
 
-	function getDataURI($, tag) {
+                    return reject(error);
 
-		return new Promise(function (resolve, reject) {
+                }
 
-			tag.each(function (i, elem) {
-				var img = $(this);
-				var imageURL = img.attr('src');
-				console.log(imageURL);
+                resolve();
+            });
 
-				var imgDataUri = requestGet(img.attr('src'))
-					.then(function (imageBody) {
+        });
+    }
 
-						var imageData = new Buffer(imageBody).toString('base64');
-						console.log("Type: " + mime.lookup(imageURL));
-						console.log("Size: " + imageData.length);
-						var dataUri = util.format("data:%s;base64,%s", mime.lookup(imageURL), imageData);
-						return dataUri;
+    function embedImages(body) {
 
-					},
-					function (error) {
+        return new Promise(function (resolve, reject) {
 
-						console.log("Error caught: %s", error);
-						return reject(error);
+            var $ = cheerio.load(body);
 
-					});
+            console.log("Starting image promise");
+            //getDataURI($, $('img'))
+            //	.then(resolve(body));
+            resolve(body);
+            console.log("Ending image promise");
+        });
 
-				img.attr('src', imgDataUri);
+    }
 
-			});
+    function getDataURI($, tag) {
 
-			resolve($.html());
+        return new Promise(function (resolve, reject) {
 
-		});
+            tag.each(function (i, elem) {
+                var img = $(this);
+                var imageURL = img.attr('src');
+                console.log(imageURL);
 
-	}
+                var imgDataUri = requestGet(img.attr('src'))
+                    .then(function (imageBody) {
+
+                        var imageData = new Buffer(imageBody).toString('base64');
+                        console.log("Type: " + mime.lookup(imageURL));
+                        console.log("Size: " + imageData.length);
+                        var dataUri = util.format("data:%s;base64,%s", mime.lookup(imageURL), imageData);
+                        return dataUri;
+
+                    },
+                    function (error) {
+
+                        console.log("Error caught: %s", error);
+                        return reject(error);
+
+                    });
+
+                img.attr('src', imgDataUri);
+
+            });
+
+            resolve($.html());
+
+        });
+
+    }
 
 };
