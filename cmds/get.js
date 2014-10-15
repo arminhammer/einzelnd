@@ -20,239 +20,88 @@ module.exports = function(program) {
         .command('get')
         .version('0.0.1')
         .description('Download a web page as a single-file archive')
-        .action(function(urlArg){
+        .action(function(urlArg) {
 
-            var urlObj = url.parse(urlArg);
+			var urlObj = url.parse(urlArg);
 
-            // Determine the filename of the url.  If it is not in the path, assume index.html.
-            var filename = urlObj.pathname.slice(urlObj.pathname.lastIndexOf('/')+1);
-            if(filename == "") {
-                filename = "index.html";
-            }
+			// Determine the filename of the url.  If it is not in the path, assume index.html.
+			var filename = urlObj.pathname.slice(urlObj.pathname.lastIndexOf('/') + 1);
+			if (filename == "") {
+				filename = "index.html";
+			}
 
-            console.log(filename);
+			console.log(filename);
 
-            var html = "";
+			var html = "";
 
-            request.getPS(urlArg)
-                .then(function(data) {
-                    return embedImages(data);
-                })
-                .then(function(response) {
-                    fs.writeFilePS(filename, response);
-                })
-                .then(function() {
-                    console.log("Finished writing %s", filename);
-                });
+			fs.readFilePS(filename)
+				.then(function(data) {
+					console.log("The data is %d long", data.length);
+				});
 
-            function embedImages(body) {
+			request.getPS(urlArg)
+				.then(function (data) {
+					embedImages(data);
+				})
+				.then(function (response) {
+					fs.writeFilePS(filename, response);
+				})
+				.then(function () {
+					console.log("Finished writing %s", filename);
+				});
 
-                return (function() {
 
-                    var $ = cheerio.load(body.toString());
+			fs.readFilePS(filename)
+				.then(function(data) {
+					console.log("The data is %d long", data.length);
+				});
+		});
 
-                    console.log("Loading $");
+	function embedImages(body) {
 
+		return (function() {
 
-                    var links = $('img').map(function (i, elem) {
+			var $ = cheerio.load(body.toString());
 
-                        console.log("Returning");
+			console.log("Loading $");
 
-                        var img = $(this);
-                        var imageURL = img.attr('src');
 
-                        return request.getPS(img.attr('src'));
-                        /*
-                            .then(function (imageBody) {
+			var links = $('img').map(function (i, elem) {
 
-                                var imageData = new Buffer(imageBody).toString('base64');
-                                console.log("Type: " + mime.lookup(imageURL));
-                                console.log("Size: " + imageData.length);
-                                var dataUri = util.format("data:%s;base64,%s", mime.lookup(imageURL), imageData);
-                                img.attr('src', dataUri);
-                                return dataUri;
-                            });
-                        */
-                    }).get();
+				console.log("Returning");
 
-                    console.log(links);
-                    //.get();
-                    //console.log(links.get(0));
+				var img = $(this);
+				var imageURL = img.attr('src');
 
-                    console.log("Done embedding.");
-                    return $.html();
+				return (function() {
+					console.log("Requesting.");
+					return request.getPS(img.attr('src'))
+					.then(function (imageBody) {
 
-                })();
+						var imageData = new Buffer(imageBody).toString('base64');
+						console.log("Type: " + mime.lookup(imageURL));
+						console.log("Size: " + imageData.length);
+						var dataUri = util.format("data:%s;base64,%s", mime.lookup(imageURL), imageData);
+						img.attr('src', dataUri);
+						return dataUri;
 
+					});
+					console.log("Requested.");
+				})();
 
+			}).get();
 
-            }
+			console.log(links);
+			//.get();
+			//console.log(links.get(0));
 
-            function getDataURI($, tag) {
+			console.log("Done embedding.");
+			return $.html();
 
-                return new Promise(function (resolve, reject) {
+		})();
 
-                    tag.each(function (i, elem) {
-                        var img = $(this);
-                        var imageURL = img.attr('src');
-                        console.log(imageURL);
 
-                        var imgDataUri = requestGet(img.attr('src'))
-                            .then(function (imageBody) {
 
-                                var imageData = new Buffer(imageBody).toString('base64');
-                                console.log("Type: " + mime.lookup(imageURL));
-                                console.log("Size: " + imageData.length);
-                                var dataUri = util.format("data:%s;base64,%s", mime.lookup(imageURL), imageData);
-                                return dataUri;
-
-                            },
-                            function (error) {
-
-                                console.log("Error caught: %s", error);
-                                return reject(error);
-
-                            });
-
-                        img.attr('src', imgDataUri);
-
-                    });
-
-                    resolve($.html());
-
-                });
-
-            }
-
-
-            /*
-             requestGet(urlArg)
-
-             .then(function(body) {
-
-             return embedImages(body);
-
-             })
-
-             .then(function(data) {
-
-             writeFile(filename, data)
-
-             .then(function () {
-
-             console.log("Finished writing %s", filename);
-
-             });
-
-             }),
-
-             function (error) {
-
-             console.log("Error caught: %s", error);
-
-             };
-             */
-        });
-
-    function buildHTML() {
-
-        return new Promise(function (resolve, reject) {
-
-            console.log()
-
-        });
-    }
-    function requestGet(url) {
-
-        return new Promise(function (resolve, reject) {
-
-            request({ url: url }, function (error, response, body) {
-
-                if (error) {
-
-                    return reject(error);
-
-                } else if (response.statusCode !== 200) {
-
-                    error = new Error("Unexpected status code: " + response.statusCode);
-                    error.res = response;
-                    return reject(error);
-
-                }
-
-                resolve(body);
-
-            });
-        });
-    }
-
-    function writeFile(filename, body) {
-
-        return new Promise(function (resolve, reject) {
-
-            fs.writeFile(filename, body, function (error) {
-
-                if (error) {
-
-                    return reject(error);
-
-                }
-
-                resolve();
-            });
-
-        });
-    }
-
-    function embedImages(body) {
-
-        return new Promise(function (resolve, reject) {
-
-            var $ = cheerio.load(body);
-
-            console.log("Starting image promise");
-            //getDataURI($, $('img'))
-            //	.then(resolve(body));
-            resolve(body);
-            console.log("Ending image promise");
-        });
-
-    }
-
-    function getDataURI($, tag) {
-
-        return new Promise(function (resolve, reject) {
-
-            tag.each(function (i, elem) {
-                var img = $(this);
-                var imageURL = img.attr('src');
-                console.log(imageURL);
-
-                var imgDataUri = requestGet(img.attr('src'))
-                    .then(function (imageBody) {
-
-                        var imageData = new Buffer(imageBody).toString('base64');
-                        console.log("Type: " + mime.lookup(imageURL));
-                        console.log("Size: " + imageData.length);
-                        var dataUri = util.format("data:%s;base64,%s", mime.lookup(imageURL), imageData);
-                        return dataUri;
-
-                    },
-                    function (error) {
-
-                        console.log("Error caught: %s", error);
-                        return reject(error);
-
-                    });
-
-                img.attr('src', imgDataUri);
-
-            });
-
-            resolve($.html());
-
-        });
-
-    }
+	}
 
 };
