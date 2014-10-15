@@ -32,26 +32,38 @@ module.exports = function(program) {
 
 			console.log(filename);
 
-			var html = "";
+			var scope = {
+				html: ""
+			};
 
 			request.getPS(urlArg)
 				.then(function (data) {
-					embedImages(data);
+					scope.html = data;
+					return getImageArray(data);
+				})
+				.map(function(link) {
+					console.log("Link %s", link);
+					return request.getPS(link)
+						.then(function(imageData) {
+							console.log("Received link: " + link);
+							buildDatUri(link, imageData, scope);
+						});
 				})
 				.then(function (response) {
-					fs.writeFilePS(filename, response);
+					fs.writeFilePS(filename, scope.html);
 				})
 				.then(function () {
 					console.log("Finished writing %s", filename);
 				});
 		});
 
-	function embedImages(body) {
+	function getImageArray(body) {
 
 		var $ = cheerio.load(body.toString());
 
 		console.log("Loading $");
 
+		var linkArray = [];
 
 		$('img').each(function (i, elem) {
 
@@ -59,30 +71,30 @@ module.exports = function(program) {
 
 			var img = $(this);
 			var imageURL = img.attr('src');
-
-			console.log("Requesting");
-			request.getPS(img.attr('src'))
-
-			/*
-			 .then(function (imageBody) {
-
-			 var imageData = new Buffer(imageBody).toString('base64');
-			 console.log("Type: " + mime.lookup(imageURL));
-			 console.log("Size: " + imageData.length);
-			 var dataUri = util.format("data:%s;base64,%s", mime.lookup(imageURL), imageData);
-			 img.attr('src', dataUri);
-			 return dataUri;
-
-			 });
-			 */
-			console.log("Requested.");
+			linkArray.push(imageURL);
 
 		});
 
-		console.log("Done embedding.");
+		console.log(linkArray);
+		return linkArray;
+	}
 
-		return $.html();
+	function buildDatUri(link, imgData, scope) {
 
+		var $ = cheerio.load(scope.html.toString());
+
+		var img = $('img').attr('src', link);
+		console.log("Tag: " + img);
+
+
+		var dataString = new Buffer(imgData).toString('base64');
+		console.log("Type: " + mime.lookup(link));
+		console.log("Size: " + dataString.length);
+		var dataUri = util.format("data:%s;base64,%s", mime.lookup(link), dataString);
+		img.attr('src', dataUri);
+
+		scope.html = $.html();
+		return;
 	}
 
 };
