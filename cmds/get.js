@@ -55,43 +55,35 @@ module.exports = function(program) {
 			console.log("Loading $");
 
 
-			var links = $('img').map(function (i, elem) {
+			$('img').each(function (i, elem) {
 
 				console.log("Returning");
 
 				var img = $(this);
 				var imageURL = img.attr('src');
 
-				return (function() {
-					console.log("Requesting.");
-					return request.getPS(img.attr('src'))
+				console.log("Requesting");
+				request.getPS(img.attr('src'))
 
-						.then(function (imageBody) {
+					.then(function (imageBody) {
 
-							var imageData = new Buffer(imageBody).toString('base64');
-							console.log("Type: " + mime.lookup(imageURL));
-							console.log("Size: " + imageData.length);
-							var dataUri = util.format("data:%s;base64,%s", mime.lookup(imageURL), imageData);
-							img.attr('src', dataUri);
-							return dataUri;
+						var imageData = new Buffer(imageBody).toString('base64');
+						console.log("Type: " + mime.lookup(imageURL));
+						console.log("Size: " + imageData.length);
+						var dataUri = util.format("data:%s;base64,%s", mime.lookup(imageURL), imageData);
+						img.attr('src', dataUri);
+						return dataUri;
 
-						});
+					});
 
-					console.log("Requested.");
-				})();
+				console.log("Requested.");
 
-			}).get();
-
-			console.log(links);
-			//.get();
-			//console.log(links.get(0));
+			});
 
 			console.log("Done embedding.");
 			return $.html();
 
 		})();
-
-
 
 	}
 
