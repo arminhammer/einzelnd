@@ -48,42 +48,40 @@ module.exports = function(program) {
 
 	function embedImages(body) {
 
-		return (function() {
+		var $ = cheerio.load(body.toString());
 
-			var $ = cheerio.load(body.toString());
-
-			console.log("Loading $");
+		console.log("Loading $");
 
 
-			$('img').each(function (i, elem) {
+		$('img').each(function (i, elem) {
 
-				console.log("Returning");
+			console.log("Returning");
 
-				var img = $(this);
-				var imageURL = img.attr('src');
+			var img = $(this);
+			var imageURL = img.attr('src');
 
-				console.log("Requesting");
-				request.getPS(img.attr('src'))
+			console.log("Requesting");
+			request.getPS(img.attr('src'))
 
-					.then(function (imageBody) {
+			/*
+			 .then(function (imageBody) {
 
-						var imageData = new Buffer(imageBody).toString('base64');
-						console.log("Type: " + mime.lookup(imageURL));
-						console.log("Size: " + imageData.length);
-						var dataUri = util.format("data:%s;base64,%s", mime.lookup(imageURL), imageData);
-						img.attr('src', dataUri);
-						return dataUri;
+			 var imageData = new Buffer(imageBody).toString('base64');
+			 console.log("Type: " + mime.lookup(imageURL));
+			 console.log("Size: " + imageData.length);
+			 var dataUri = util.format("data:%s;base64,%s", mime.lookup(imageURL), imageData);
+			 img.attr('src', dataUri);
+			 return dataUri;
 
-					});
+			 });
+			 */
+			console.log("Requested.");
 
-				console.log("Requested.");
+		});
 
-			});
+		console.log("Done embedding.");
 
-			console.log("Done embedding.");
-			return $.html();
-
-		})();
+		return $.html();
 
 	}
 
