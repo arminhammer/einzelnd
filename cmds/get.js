@@ -38,16 +38,20 @@ module.exports = function(program) {
 
 			request.getPS(urlArg)
 				.then(function (data) {
-					scope.html = data;
-					return getImageArray(data);
+					//scope.html = data;
+					fs.writeFileSync("scope.html", scope.html);
+					return getImageArray(scope.html);
 				})
 				.map(function(link) {
 					console.log("Link %s", link);
+					fs.writeFileSync("scope1.html", scope.html);
 					return request.getPS(link)
 						.then(function(imageData) {
-							console.log("Received link: " + link);
-							buildDatUri(link, imageData, scope);
+							buildDataUri(link, imageData, scope);
 						});
+				})
+				.then(function(response) {
+					console.log("Response: %s, link: %s", response);
 				})
 				.then(function (response) {
 					fs.writeFilePS(filename, scope.html);
@@ -77,12 +81,14 @@ module.exports = function(program) {
 
 		console.log(linkArray);
 		return linkArray;
+
 	}
 
-	function buildDatUri(link, imgData, scope) {
+	function buildDataUri(link, imgData, scope) {
 
 		var $ = cheerio.load(scope.html.toString());
 
+		console.log("Link: %s", link);
 		var img = $('img').attr('src', link);
 		console.log("Tag: " + img);
 
@@ -95,6 +101,7 @@ module.exports = function(program) {
 
 		scope.html = $.html();
 		return;
+
 	}
 
 };
