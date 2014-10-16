@@ -46,17 +46,25 @@ module.exports = function(program) {
                     scope.html = data;
                     return getImageArray(scope.html);
                 })
-                //For each image URL, download it, and replace the URL in the page with the dataUri
+                // For each image URL, download it, and replace the URL in the page with the dataUri
                 .map(function(link) {
                     console.log("Link %s", link);
-                    return request.getPS(link)
-                        .then(function(imageData) {
-                            //console.log("Image Data: " + imageData.toString());
-                            buildDataUri(link, imageData, scope);
+                    return new Promise(function(resolve, reject) {
+                        request.get({ url: link.url, encoding: null }, function (error, response, imageData) {
+                            console.log("Status: " + response.statusCode);
+                            console.log("Size: " + imageData.length);
+                            link.data = new Buffer(imageData, 'binary').toString('base64');
+                            resolve(link);
                         });
+                    });
                 })
-                //Then write the file to disk
-                .then(function (response) {
+                // Generate the dataUris and replace the img src urls with them
+                .then(function(linkArray) {
+                    console.log("Array Length: %d", linkArray.length);
+                    return buildDataUri(linkArray, scope);
+                })
+                // Then write the file to disk
+                .then(function () {
                     fs.writeFilePS(filename, scope.html);
                 })
                 // Notify the user
@@ -84,7 +92,7 @@ module.exports = function(program) {
 
             var img = $(this);
             var imageURL = img.attr('src');
-            linkArray.push(imageURL);
+            linkArray.push({ url: imageURL });
 
         });
 
@@ -102,24 +110,21 @@ module.exports = function(program) {
      * @returns {string}
      *
      */
-    function buildDataUri(link, imgData, scope) {
+    function buildDataUri(links, scope) {
 
         var $ = cheerio.load(scope.html.toString());
 
-        console.log("Link: %s", link);
-        //console.log("Status code: %s", imgData.statusCode);
-        var img = $('img').filter(function() {
-            return $(this).attr('src') === link;
-        });
-        console.log("Tag: " + img);
+        console.log("Length: %d", links.length);
+        for(var i = 0; i < links.length; i++) {
+            console.log("Link: %s", links[i].url);
 
-        var dataString = new Buffer(imgData.toString(), 'binary').toString('base64');
-        console.log("Type: " + mime.lookup(link));
-        console.log("Size: " + dataString.length);
-        console.log("Datastring: " + dataString.substring(0, 100));
-        var dataUri = util.format("data:%s;base64,%s", mime.lookup(link), dataString);
-        img.attr('src', dataUri);
-        //console.log("New Tag: " + img);
+            var dataUri = util.format("data:%s;base64,%s", mime.lookup(links[i].url), links[i].data);
+
+            var img = $('img').filter(function() {
+                return $(this).attr('src') === links[i].url;
+            });
+            img.attr('src', dataUri);
+        }
 
         scope.html = $.html();
         return scope.html;
