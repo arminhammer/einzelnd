@@ -86,13 +86,11 @@ module.exports = function (grunt) {
 		jshint: {
 			options: {
 				jshintrc: '.jshintrc',
-				reporter: require('jshint-stylish')
 			},
 			all: [
 				'Gruntfile.js',
 				'bin/*',
-				'cmds/*.js',
-				'spec/*.spec.js'
+				'cmds/*.js'
 			],
 			test: {
 				options: {
@@ -144,7 +142,7 @@ module.exports = function (grunt) {
 			}
 		},
 
-		jasmine_node: {
+		jasmineNode: {
 			coverage: {
 			},
 			options: {
@@ -156,7 +154,7 @@ module.exports = function (grunt) {
 				captureExceptions: true,
 				junitreport: {
 					report: false,
-					savePath : "./build/reports/jasmine/",
+					savePath : './build/reports/jasmine/',
 					useDotNotation: true,
 					consolidate: true
 				}
@@ -340,6 +338,7 @@ module.exports = function (grunt) {
 	});
 
 	grunt.registerTask('test', [
+		'jshint',
 		'jasmine_node'
 	]);
 

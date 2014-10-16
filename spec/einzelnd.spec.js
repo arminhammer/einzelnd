@@ -1,6 +1,6 @@
 'use strict';
 
-var assert = require("assert");
+var assert = require('assert');
 var exec = require('child_process').exec;
 var path = require('path');
 
@@ -13,14 +13,14 @@ describe('einzelnd bin', function(){
 	console.log(cmd);
 
 	it('--help should run without errors', function(done) {
-		exec(cmd+'--help', function (error, stdout, stderr) {
+		exec(cmd+'--help', function (error) {
 			assert(!error);
 			done();
 		});
 	});
 
 	it('--version should run without errors', function(done) {
-		exec(cmd+'--version', function (error, stdout, stderr) {
+		exec(cmd+'--version', function (error) {
 			assert(!error);
 			done();
 		});
@@ -28,7 +28,7 @@ describe('einzelnd bin', function(){
 
 	it('should return error on missing command', function(done) {
 
-		exec(cmd, function (error, stdout, stderr) {
+		exec(cmd, function (error) {
 			assert(error);
 			assert.equal(error.code,1);
 			done();
@@ -38,7 +38,7 @@ describe('einzelnd bin', function(){
 
 	it('should return error on unknown command', function(done) {
 
-		exec(cmd+'junkcmd', function (error, stdout, stderr) {
+		exec(cmd+'junkcmd', function (error) {
 			assert(error);
 			assert.equal(error.code,1);
 			done();

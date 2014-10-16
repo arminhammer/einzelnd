@@ -46,8 +46,9 @@
     "mime": "~1.2.11",
     "jasmine-node": "~1.14.5",
     "time-grunt": "~1.0.0",
-    "jshint-stylish": "~1.0.0",
     "grunt-jasmine-node-coverage": "~0.1.11",
-    "istanbul": "~0.3.2"
+    "istanbul": "~0.3.2",
+    "jshint-stylish": "~1.0.0",
+    "grunt-contrib-jshint": "~0.10.0"
   }
 }
