@@ -4,7 +4,11 @@ var assert = require("assert");
 var exec = require('child_process').exec;
 var path = require('path');
 
+
+require('../cmds/get.js');
+
 describe('einzelnd bin', function(){
+
 	var cmd = 'node '+path.join(__dirname, '../bin/einzelnd')+' ';
 	console.log(cmd);
 
@@ -23,7 +27,6 @@ describe('einzelnd bin', function(){
 	});
 
 	it('should return error on missing command', function(done) {
-        this.timeout(4000);
 
 		exec(cmd, function (error, stdout, stderr) {
 			assert(error);
@@ -34,7 +37,6 @@ describe('einzelnd bin', function(){
 	});
 
 	it('should return error on unknown command', function(done) {
-        this.timeout(4000);
 
 		exec(cmd+'junkcmd', function (error, stdout, stderr) {
 			assert(error);
