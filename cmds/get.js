@@ -132,6 +132,7 @@ module.exports = function(program) {
 	 */
 	function getHTTP(link) {
 
+		console.log("Starting " + link.url);
 		return new Promise(function(resolve, reject) {
 			request.get({ url: link.url, encoding: null }, function (error, response, imageData) {
 
@@ -143,6 +144,7 @@ module.exports = function(program) {
 				console.log("Size: " + imageData.length);
 				link.data = new Buffer(imageData, 'binary').toString('base64');
 
+				console.log("Finished " + link.url);
 				resolve(link);
 
 			});
