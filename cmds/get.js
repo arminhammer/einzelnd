@@ -48,7 +48,7 @@ module.exports = function(program) {
 				})
 				// For each image URL, download it, and replace the URL in the page with the dataUri
 				.map(function(link) {
-					console.log("Link %s", link);
+					console.log("Link %s", link.url);
 					return getHTTP(link);
 
 				})
@@ -145,6 +145,7 @@ module.exports = function(program) {
 				link.data = new Buffer(imageData, 'binary').toString('base64');
 
 				console.log("Finished " + link.url);
+				console.log("Data URI created: " + link.data.substring(0,100));
 				resolve(link);
 
 			});
