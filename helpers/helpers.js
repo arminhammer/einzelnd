@@ -4,8 +4,8 @@
 'use strict';
 
 var cheerio = require('cheerio');
-var Promise = require('bluebird');
-//var request = Promise.promisifyAll(require('request'), { suffix: 'PS' });
+var helperPromise = require('bluebird');
+//var request = helperPromise.promisifyAll(require('request'), { suffix: 'PS' });
 var request = require('request');
 var util = require('util');
 var mime = require('mime');
@@ -76,7 +76,7 @@ exports.buildDataUri = function(links, scope) {
 exports.getHTTP = function(link) {
 
     console.log('Starting %s', link.url);
-    return new Promise(function(resolve, reject) {
+    return new helperPromise(function(resolve, reject) {
         request.get({ url: link.url, encoding: null }, function (error, response, imageData) {
 
             if(error) {
