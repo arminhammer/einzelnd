@@ -88,7 +88,6 @@ module.exports = function (grunt) {
 				jshintrc: '.jshintrc',
 			},
 			all: [
-				'Gruntfile.js',
 				'bin/*',
 				'cmds/*.js'
 			],
@@ -142,7 +141,7 @@ module.exports = function (grunt) {
 			}
 		},
 
-		jasmineNode: {
+		jasmine_node: {
 			coverage: {
 			},
 			options: {

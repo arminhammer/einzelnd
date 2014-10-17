@@ -7,7 +7,6 @@
     "einzelnd": "./bin/einzelnd"
   },
   "scripts": {
-    "install": "npm install",
     "start": "node bin/einzelnd get http://www.supremecart.org",
     "test": "jasmine-node spec --autotest",
     "test-single-run": "jasmine-node spec",
