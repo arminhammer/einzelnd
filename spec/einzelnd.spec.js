@@ -4,9 +4,6 @@ var assert = require('assert');
 var exec = require('child_process').exec;
 var path = require('path');
 
-
-require('../cmds/get.js');
-
 describe('einzelnd bin', function(){
 
 	var cmd = 'node '+path.join(__dirname, '../bin/einzelnd')+' ';

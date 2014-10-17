@@ -8,7 +8,6 @@ require('../cmds/get.js')(program);
 program
 	.version('0.0.1');
 
-
 program
 	.on('*', function(name) {
 		console.log('\''+name+'\' is not a known command. See \'einzelnd --help\':');

@@ -85,11 +85,12 @@ module.exports = function (grunt) {
 
 		jshint: {
 			options: {
-				jshintrc: '.jshintrc',
+				jshintrc: '.jshintrc'
 			},
 			all: [
 				'bin/*',
-				'cmds/*.js'
+				'cmds/*.js',
+                'helpers/helpers.js'
 			],
 			test: {
 				options: {
