@@ -80,6 +80,8 @@ exports.getHTTP = function(link) {
         request.get({ url: link.url, encoding: null }, function (error, response, imageData) {
 
             if(error) {
+                console.log('Error: ' + error);
+                console.log('Response status code ' + response.statusCode);
                 reject(error);
             }
 
