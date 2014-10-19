@@ -112,7 +112,10 @@ module.exports = function (grunt) {
 					]
 				}]
 			},
-			server: '.tmp'
+			server: '.tmp',
+            coverage: {
+                src: ['coverage/']
+            }
 		},
 
 		autoprefixer: {
@@ -160,6 +163,29 @@ module.exports = function (grunt) {
 				}
 			}
 		},
+
+        blanket: {
+            coverage: {
+                src: ['cmds/'],
+                dest: 'coverage/src/'
+            }
+        },
+        mochaTest: {
+            test: {
+                options: {
+                    reporter: 'spec',
+                },
+                src: ['/coverage/test/**/*.js']
+            },
+            coverage: {
+                options: {
+                    reporter: 'html-cov',
+                    quiet: false,
+                    captureFile: 'coverage.html'
+                },
+                src: ['/coverage/test/**/*.js']
+            }
+        },
 
 		useminPrepare: {
 			html: '<%= myApp.app %>/index.html',
@@ -260,7 +286,11 @@ module.exports = function (grunt) {
 				dest: '.tmp/css/',
 				src: '{,*/}*.css'
 			},
-			modules: {
+            coverage: {
+                src: ['test/**'],
+                dest: 'coverage/'
+            },
+            modules: {
 				expand: true,
 				cwd: '<%= myApp %>/node_modules',
 				dest: '<%= myApp.dist %>/node_modules',
@@ -339,7 +369,10 @@ module.exports = function (grunt) {
 
 	grunt.registerTask('test', [
 		'jshint',
-		'jasmine_node'
+        'clean:coverage',
+        'copy:coverage',
+        'blanket',
+        'mochaTest'
 	]);
 
 	grunt.registerTask('build', [

@@ -1,12 +1,11 @@
 'use strict';
 
-//var assert = require('assert');
-//var exec = require('child_process').exec;
+require('blanket');
+
+var expect = require('expect.js');
 var path = require('path');
 var fs = require('fs');
 var cheerio = require('cheerio');
-
-var blanket = require('blanket');
 
 var helpers = require('../helpers/helpers.js');
 
@@ -19,7 +18,7 @@ describe('helpers', function() {
 
         var array = helpers.getImageArray(html);
 
-        expect(array.length).toEqual(9);
+        expect(array.length).to.equal(9);
 
     });
 
@@ -34,11 +33,11 @@ describe('helpers', function() {
         var result = helpers.buildDataUri(array, scope);
 
         var $ = cheerio.load(result);
-        expect($('img').length).toEqual(9);
+        expect($('img').length).to.equal(9);
 
         $('img').each(function() {
             var url = $(this).attr('src');
-            expect(url).toContain('data:image/jpeg;base64,');
+            expect(url).to.contain('data:image/jpeg;base64,');
             //expect(url).not.toContain('undefined');
         });
 
@@ -46,10 +45,10 @@ describe('helpers', function() {
 
     it('getHTTP should return a proper response', function() {
 
-        link = {};
+        var link = {};
         link.url = 'http://localhost:3000/img/image7.jpg';
 
-        testLink = {};
+        var testLink = {};
         testLink.url = 'http://localhost:3000/img/image7.jpg';
 
         var filepath = path.join(__dirname, '../testserver/public/img/image7.jpg');
@@ -58,9 +57,8 @@ describe('helpers', function() {
 
         return helpers.getHTTP(link).then(function (data) {
 
-            expect(link.url).toEqual(testLink.url);
-            expect(link.data.length).toEqual(testLink.data.length);
-            console.log("Ran Test.");
+            expect(link.url).to.equal(testLink.url);
+            expect(link.data.length).to.equal(testLink.data.length);
         });
 
     });
