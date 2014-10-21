@@ -21,19 +21,30 @@ exports.getImageArray = function(scope) {
 
     console.log('Loading $');
 
-    $('img').each(function () {
-
-        console.log('Returning');
-
-        var img = $(this);
-        var imageURL = img.attr('src');
-        scope.images.push({ url: imageURL });
-
+    $('img').each(function() {
+        parseHTML($(this), 'src', scope)
     });
 
-    console.log(scope.images);
-    return scope;
+    $('link').each(function() {
+        parseHTML($(this), 'href', scope)
+    });
 
+    console.log(scope.elements);
+    return scope.elements;
+
+};
+
+var parseHTML = function(tag, attr, scope) {
+
+    console.log('Adding %s to array', tag);
+
+    var item = tag;
+    var itemURL = item.attr(attr);
+    scope.elements.push({
+        tag: tag[0].name,
+        attr: attr,
+        url: itemURL
+    });
 };
 
 /**
@@ -49,14 +60,14 @@ exports.buildDataUri = function(scope) {
 
     var $ = cheerio.load(scope.html.toString());
 
-    console.log('Length: %d', scope.images.length);
-    for(var i = 0; i < scope.images.length; i++) {
-        console.log('Link: %s', scope.images[i].url);
+    console.log('Length: %d', scope.elements.length);
+    for(var i = 0; i < scope.elements.length; i++) {
+        console.log('Link: %s, data: %s', scope.elements[i].url);//, scope.elements[i].data.length);
 
-        var dataUri = util.format('data:%s;base64,%s', mime.lookup(scope.images[i].url), scope.images[i].data);
+        var dataUri = util.format('data:%s;base64,%s', mime.lookup(scope.elements[i].url), scope.elements[i].data);
 
         var img = $('img').filter(function() {
-            return $(this).attr('src') === scope.images[i].url;
+            return $(this).attr('src') === scope.elements[i].url;
         });
         img.attr('src', dataUri);
     }
