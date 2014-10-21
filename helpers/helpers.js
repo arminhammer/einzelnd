@@ -15,13 +15,11 @@ var mime = require('mime');
  * @param body
  * @returns {Array}
  */
-exports.getImageArray = function(body) {
+exports.getImageArray = function(scope) {
 
-    var $ = cheerio.load(body.toString());
+    var $ = cheerio.load(scope.html.toString());
 
     console.log('Loading $');
-
-    var linkArray = [];
 
     $('img').each(function () {
 
@@ -29,12 +27,12 @@ exports.getImageArray = function(body) {
 
         var img = $(this);
         var imageURL = img.attr('src');
-        linkArray.push({ url: imageURL });
+        scope.images.push({ url: imageURL });
 
     });
 
-    console.log(linkArray);
-    return linkArray;
+    console.log(scope.images);
+    return scope;
 
 };
 
@@ -47,18 +45,18 @@ exports.getImageArray = function(body) {
  * @returns {string}
  *
  */
-exports.buildDataUri = function(links, scope) {
+exports.buildDataUri = function(scope) {
 
     var $ = cheerio.load(scope.html.toString());
 
-    console.log('Length: %d', links.length);
-    for(var i = 0; i < links.length; i++) {
-        console.log('Link: %s', links[i].url);
+    console.log('Length: %d', scope.images.length);
+    for(var i = 0; i < scope.images.length; i++) {
+        console.log('Link: %s', scope.images[i].url);
 
-        var dataUri = util.format('data:%s;base64,%s', mime.lookup(links[i].url), links[i].data);
+        var dataUri = util.format('data:%s;base64,%s', mime.lookup(scope.images[i].url), scope.images[i].data);
 
         var img = $('img').filter(function() {
-            return $(this).attr('src') === links[i].url;
+            return $(this).attr('src') === scope.images[i].url;
         });
         img.attr('src', dataUri);
     }

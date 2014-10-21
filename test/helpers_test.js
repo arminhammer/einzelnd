@@ -11,34 +11,46 @@ var helpers = require('../helpers/helpers.js');
 
 describe('helpers', function() {
 
+    var filepath = path.join(__dirname, '../testserver/public/index.html');
+    var scope;
+
+    beforeEach(function() {
+
+        scope = {};
+        scope.html = fs.readFileSync(filepath);
+        scope.images = [];
+
+    });
+
+    afterEach(function() {
+
+        scope = null;
+
+    });
+
     it('getImageArray should return a correct image array', function() {
 
-        var filepath = path.join(__dirname, '../testserver/public/index.html');
-        var html = fs.readFileSync(filepath);
+        helpers.getImageArray(scope);
 
-        var array = helpers.getImageArray(html);
-
-        expect(array.length).to.equal(9);
+        expect(scope.images.length).to.equal(9);
 
     });
 
     it('buildDataUri should replace the image urls with dataUris', function() {
 
-        var filepath = path.join(__dirname, '../testserver/public/index.html');
-        var scope = {};
-        scope.html = fs.readFileSync(filepath);
+        var array = helpers.getImageArray(scope);
 
-        var array = helpers.getImageArray(scope.html);
-
-        var result = helpers.buildDataUri(array, scope);
+        var result = helpers.buildDataUri(scope);
 
         var $ = cheerio.load(result);
         expect($('img').length).to.equal(9);
 
         $('img').each(function() {
+
             var url = $(this).attr('src');
             expect(url).to.contain('data:image/jpeg;base64,');
             //expect(url).not.toContain('undefined');
+
         });
 
     });

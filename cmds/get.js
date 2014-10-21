@@ -31,7 +31,8 @@ module.exports = function(program) {
 
 			// Maintain the state of the file to ultimately be written
 			var scope = {
-				html: ''
+				html: '',
+                images: []
 			};
 
 			/**
@@ -41,7 +42,7 @@ module.exports = function(program) {
 				// Then get an array of all of the image URLs
 				.then(function (data) {
 					scope.html = data;
-					return helpers.getImageArray(scope.html);
+					return helpers.getImageArray(scope);
 				})
 				// For each image URL, download it, and replace the URL in the page with the dataUri
 				.map(function(link) {
