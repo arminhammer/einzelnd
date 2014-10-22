@@ -5,26 +5,32 @@
 
 getHelper = require('./helpers/get.js');
 
-var opts = require("nomnom");
+var program = require("commander");
 
-opts.command('get')
-    .callback(function(url) {
+program
+    .version('0.0.1');
+
+program
+    .on('*', function(name) {
+        console.log('\''+name+'\' is not a known command. See \'einzelnd --help\':');
+        program.outputHelp();
+        process.exit(1);
+    });
+
+program
+    .command('get')
+    .version('0.0.1')
+    .description('Download a web page as a single-file archive')
+    .action(function(url) {
         console.log(url);
-        getHelper.getPage(url[1]);
-    })
-    .help("Download and embed a web page");
+        getHelper.getPage(url);
+    });
 
-opts.option('version', {
-    flag: true,
-    help: 'print version and exit',
-    callback: function() {
-        return "version 0.0.1";
-    }
-});
+program
+    .parse(process.argv);
 
-opts.parse();
-
-if (opts.debug) {
-
+if (program.args.length < 1 ) {
+    console.log('No command specified. See \'einzelnd --help\':');
+    program.outputHelp();
+    process.exit(1);
 }
-
