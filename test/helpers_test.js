@@ -18,7 +18,7 @@ describe('helpers', function() {
 
         scope = {};
         scope.html = fs.readFileSync(filepath);
-        scope.images = [];
+        scope.elements = [];
 
     });
 
@@ -32,7 +32,7 @@ describe('helpers', function() {
 
         helpers.getImageArray(scope);
 
-        expect(scope.images.length).to.equal(9);
+        expect(scope.elements.length).to.equal(9);
 
     });
 
