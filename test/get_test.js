@@ -1,14 +1,12 @@
 'use strict';
 
-require('blanket');
-
 var assert = require('assert');
 var exec = require('child_process').exec;
 var path = require('path');
 
 var fs = require('fs');
 
-var einGet = require('../cmds/get.js');
+var einGet = require('../helpers/get.js');
 
 describe('einzelnd get', function() {
 

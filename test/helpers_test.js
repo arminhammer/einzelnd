@@ -1,7 +1,5 @@
 'use strict';
 
-require('blanket');
-
 var expect = require('expect.js');
 var path = require('path');
 var fs = require('fs');
