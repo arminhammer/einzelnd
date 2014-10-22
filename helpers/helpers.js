@@ -66,8 +66,8 @@ exports.buildDataUri = function(scope) {
 
         var dataUri = util.format('data:%s;base64,%s', mime.lookup(scope.elements[i].url), scope.elements[i].data);
 
-        var img = $('img').filter(function() {
-            return $(this).attr('src') === scope.elements[i].url;
+        var img = $(scope.elements[i].tag).filter(function() {
+            return $(this).attr(scope.elements[i].attr) === scope.elements[i].url;
         });
         img.attr('src', dataUri);
     }

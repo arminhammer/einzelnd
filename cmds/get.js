@@ -60,6 +60,7 @@ module.exports = function(program) {
                 })
                 // For each image URL, download it, and replace the URL in the page with the dataUri
                 .map(function(element) {
+
                     console.log('Element %s', element.url);
                     return helpers.getHTTP(element);
 
