@@ -32,7 +32,7 @@ describe('helpers', function() {
 
         helpers.getImageArray(scope);
 
-        expect(scope.elements.length).to.equal(9);
+        expect(scope.elements.length).to.equal(10);
 
     });
 
@@ -74,5 +74,22 @@ describe('helpers', function() {
         });
 
     });
+
+    /*
+    it('getHTTP report the broken link', function() {
+
+        var link = {};
+        link.url = 'http://localhost:3000/img/image756.jpg';
+
+        return helpers.getHTTP(link).then(function (data) {
+
+            console.log(link.data);
+            //expect(link.url).to.equal(testLink.url);
+            //expect(link.data.length).to.equal(testLink.data.length);
+        });
+
+    });
+    */
+
 
 });
