@@ -45,9 +45,9 @@ exports.getInlineResources = function(scope) {
 
     });
 
-    //$('script').each(function() {
-    //    parseHTML($(this), 'src', scope.inline)
-    //});
+    $('script').each(function() {
+        parseHTML($(this), 'src', scope.inline)
+    });
 
     console.log(scope.inline);
     return scope.inline;
@@ -81,7 +81,12 @@ exports.mergeInlineResources = function(scope) {
         });
         var parent = resource.parent();
         console.log('resource is %s, parent is %s', resource, parent);
-        parent.append('<style>' + scope.inline[i].data + '</style>');
+        if(scope.inline[i].tag == 'link') {
+            parent.append('<style>' + scope.inline[i].data + '</style>');
+        }
+        if(scope.inline[i].tag == 'script') {
+            parent.append('<script>' + scope.inline[i].data + '</script>');
+        }
         resource.remove();
     }
 
@@ -120,7 +125,7 @@ exports.buildDataUri = function(scope) {
     for(var i = 0; i < scope.elements.length; i++) {
         console.log('Link: %s, data: %s', scope.elements[i].url);//, scope.elements[i].data.length);
 
-        var dataUri = util.format('data:%s;base64,%s', mime.lookup(scope.elements[i].url), scope.elements[i].data);
+        var dataUri = util.format('data:%s;base64,%s', mime.lookup(scope.elements[i].url), scope.elements[i].dataUri);
 
         var img = $(scope.elements[i].tag).filter(function() {
             return $(this).attr(scope.elements[i].attr) === scope.elements[i].url;
