@@ -15,7 +15,7 @@ var mime = require('mime');
  * @param body
  * @returns {Array}
  */
-exports.getImageArray = function(scope) {
+exports.getMediaArray = function(scope) {
 
     var $ = cheerio.load(scope.html.toString());
 
@@ -23,6 +23,24 @@ exports.getImageArray = function(scope) {
 
     $('img').each(function() {
         parseHTML($(this), 'src', scope.elements)
+    });
+
+    var re = /@import\surl\([\"|\']([\w|\/|\.]+)[\"|\']\)/g;
+    //var match = [];
+    $('style').each(function() {
+        console.log("CHECKING %s", $(this));
+        var body = $(this).html();
+        var match = re.exec(body);
+        if(match) {
+            console.log("FOUND match %s, length %d, first: %s", match, match.length, match[1]);
+            scope.elements.push(
+                {
+                    tag: 'style',
+                    attr: '',
+                    url: match[1]
+                }
+            )
+        }
     });
 
     console.log(scope.elements);
@@ -80,7 +98,7 @@ exports.mergeInlineResources = function(scope) {
             return $(this).attr(scope.inline[i].attr) === scope.inline[i].url;
         });
         var parent = resource.parent();
-        console.log('resource is %s, parent is %s', resource, parent);
+        //console.log('resource is %s, parent is %s', resource, parent);
         if(scope.inline[i].tag == 'link') {
             parent.append('<style>' + scope.inline[i].data + '</style>');
         }
@@ -123,7 +141,7 @@ exports.buildDataUri = function(scope) {
 
     console.log('Length: %d', scope.elements.length);
     for(var i = 0; i < scope.elements.length; i++) {
-        console.log('Link: %s, data: %s', scope.elements[i].url);//, scope.elements[i].data.length);
+        console.log('Link: %s, data: %s', scope.elements[i].url);
 
         var dataUri = util.format('data:%s;base64,%s', mime.lookup(scope.elements[i].url), scope.elements[i].dataUri);
 
@@ -174,42 +192,44 @@ exports.getHTTP = function(link) {
  * @param requestParam
  * @returns {Promise}
  */
-exports.getInlineResourceHTTP = function(inlineResource, scope) {
+/*
+ exports.getInlineResourceHTTP = function(inlineResource, scope) {
 
-    console.log('Starting %s', inlineResource.url);
-    return new helperPromise(function(resolve, reject) {
-        request.get({ url: inlineResource.url, encoding: null }, function (error, response, inlineResourceResponse) {
+ console.log('Starting %s', inlineResource.url);
+ return new helperPromise(function(resolve, reject) {
+ request.get({ url: inlineResource.url, encoding: null }, function (error, response, inlineResourceResponse) {
 
-            if(error) {
-                console.log('Error: ' + error);
-                console.log('Response status code ' + response.statusCode);
-                reject(error);
-            }
+ if(error) {
+ console.log('Error: ' + error);
+ console.log('Response status code ' + response.statusCode);
+ reject(error);
+ }
 
-            console.log('Status: %d', response.statusCode);
-            console.log('Size: %d', inlineResourceResponse.length);
+ console.log('Status: %d', response.statusCode);
+ console.log('Size: %d', inlineResourceResponse.length);
 
-            var $ = cheerio.load(scope.html.toString());
+ var $ = cheerio.load(scope.html.toString());
 
-            var res = $(inlineResource.tag).filter(function() {
-                return $(this).attr(inlineResource.attr) === inlineResource.url;
-            });
+ var res = $(inlineResource.tag).filter(function() {
+ return $(this).attr(inlineResource.attr) === inlineResource.url;
+ });
 
-            console.log("Res: " + res.html());
+ console.log("Res: " + res.html());
 
-            res.attr(inlineResource.attr, '');
-            res.html(inlineResourceResponse);
+ res.attr(inlineResource.attr, '');
+ res.html(inlineResourceResponse);
 
-            console.log("Res New: " + res.html());
+ console.log("Res New: " + res.html());
 
 
-            //inlineResource.data = new Buffer(inlineResourceResponse, 'binary').toString('base64');
+ //inlineResource.data = new Buffer(inlineResourceResponse, 'binary').toString('base64');
 
-            console.log('Finished %s', inlineResource.url);
-            //console.log('Data URI created: %s', inlineResource.data.substring(0,100));
-            resolve(inlineResource);
+ console.log('Finished %s', inlineResource.url);
+ //console.log('Data URI created: %s', inlineResource.data.substring(0,100));
+ resolve(inlineResource);
 
-        });
-    });
+ });
+ });
 
-};
+ };
+ */

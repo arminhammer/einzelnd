@@ -56,7 +56,7 @@ exports.getPage = function(urlArg) {
         // Then get an array of all of the image URLs
         .then(function () {
 
-            return helpers.getImageArray(scope);
+            return helpers.getMediaArray(scope);
 
         })
         // For each image URL, download it, and replace the URL in the page with the dataUri
