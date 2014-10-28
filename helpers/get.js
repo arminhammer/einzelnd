@@ -28,18 +28,6 @@ exports.getPage = function(urlArg) {
         elements: []
     };
 
-    var processImages = function () {
-
-        return (function() {
-            return scope.images.map(function (image) {
-                console.log('Image URL: Link %s', image.url);
-                return helpers.getHTTP(image);
-
-            });
-        })();
-
-    };
-
     /**
      * Start off the chain of events by getting a copy of the web page
      */

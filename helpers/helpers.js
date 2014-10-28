@@ -29,6 +29,10 @@ exports.getImageArray = function(scope) {
         parseHTML($(this), 'href', scope)
     });
 
+    $('script').each(function() {
+        parseHTML($(this), 'src', scope)
+    });
+
     console.log(scope.elements);
     return scope.elements;
 
@@ -40,11 +44,13 @@ var parseHTML = function(tag, attr, scope) {
 
     var item = tag;
     var itemURL = item.attr(attr);
-    scope.elements.push({
-        tag: tag[0].name,
-        attr: attr,
-        url: itemURL
-    });
+    if(itemURL) {
+        scope.elements.push({
+            tag: tag[0].name,
+            attr: attr,
+            url: itemURL
+        });
+    }
 };
 
 /**

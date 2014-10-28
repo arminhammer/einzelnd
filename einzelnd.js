@@ -2,7 +2,6 @@
  * Created by armin on 10/21/14.
  */
 
-
 getHelper = require('./helpers/get.js');
 
 var program = require("commander");
