@@ -46,8 +46,12 @@ exports.getPage = function(urlArg) {
         .map(function(element) {
 
             console.log('Element %s', element.url);
-            return helpers.getInlineResourceHTTP(element, scope);
+            return helpers.getHTTP(element);
 
+        })
+        //
+        .then(function() {
+            return helpers.mergeInlineResources(scope);
         })
         // Then get an array of all of the image URLs
         .then(function () {

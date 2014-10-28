@@ -69,6 +69,27 @@ var parseHTML = function(tag, attr, array) {
     }
 };
 
+exports.mergeInlineResources = function(scope) {
+
+    var $ = cheerio.load(scope.html.toString());
+
+    console.log('Inline resources: %d', scope.inline.length);
+    for(var i = 0; i < scope.inline.length; i++) {
+
+        var resource = $(scope.inline[i].tag).filter(function() {
+            return $(this).attr(scope.inline[i].attr) === scope.inline[i].url;
+        });
+        var parent = resource.parent();
+        console.log('resource is %s, parent is %s', resource, parent);
+        parent.append('<style>' + scope.inline[i].data + '</style>');
+        resource.remove();
+    }
+
+    scope.html = $.html();
+    return scope.html;
+
+};
+
 var parseInline = function(tag, attr) {
 
     console.log('Adding %s to array', tag);
@@ -121,7 +142,7 @@ exports.getHTTP = function(link) {
 
     console.log('Starting %s', link.url);
     return new helperPromise(function(resolve, reject) {
-        request.get({ url: link.url, encoding: null }, function (error, response, imageData) {
+        request.get({ url: link.url, encoding: null }, function (error, response, data) {
 
             if(error) {
                 console.log('Error: ' + error);
@@ -130,11 +151,11 @@ exports.getHTTP = function(link) {
             }
 
             console.log('Status: %d', response.statusCode);
-            console.log('Size: %d', imageData.length);
-            link.data = new Buffer(imageData, 'binary').toString('base64');
-
+            console.log('Size: %d', data.length);
+            link.data = data;
+            link.dataUri = new Buffer(data, 'binary').toString('base64');
             console.log('Finished %s', link.url);
-            console.log('Data URI created: %s', link.data.substring(0,100));
+            console.log('Data URI created: %s', link.dataUri.substring(0,100));
             resolve(link);
 
         });
