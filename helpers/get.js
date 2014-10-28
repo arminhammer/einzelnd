@@ -25,17 +25,33 @@ exports.getPage = function(urlArg) {
     // Maintain the state of the file to ultimately be written
     var scope = {
         html: '',
-        elements: []
+        elements: [],
+        inline: []
     };
 
     /**
      * Start off the chain of events by getting a copy of the web page
      */
     request.getPS(urlArg)
-        // Then get an array of all of the image URLs
+        // First get the javascript and css resources, which can be inlined.
         .then(function (data) {
 
+            // First save the request result to the scope.html variable
             scope.html = data;
+
+            return helpers.getInlineResources(scope);
+
+        })
+        // For each css or js resource, download it, and replace the URL in the page with the resource
+        .map(function(element) {
+
+            console.log('Element %s', element.url);
+            return helpers.getInlineResourceHTTP(element, scope);
+
+        })
+        // Then get an array of all of the image URLs
+        .then(function () {
+
             return helpers.getImageArray(scope);
 
         })
