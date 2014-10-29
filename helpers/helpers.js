@@ -9,6 +9,7 @@ var helperPromise = require('bluebird');
 var request = require('request');
 var util = require('util');
 var mime = require('mime');
+var url = require('url');
 
 /**
  * Get an array of all of the urls in img.src's on the page
@@ -28,7 +29,7 @@ exports.getMediaArray = function(scope) {
     var re = /@import\surl\([\"|\']([\w|\/|\.]+)[\"|\']\)/g;
     //var match = [];
     $('style').each(function() {
-        console.log("CHECKING %s", $(this));
+        console.log("CHECKING");
         var body = $(this).html();
         var match = re.exec(body);
         if(match) {
@@ -37,7 +38,7 @@ exports.getMediaArray = function(scope) {
                 {
                     tag: 'style',
                     attr: '',
-                    url: match[1]
+                    url: url.resolve(scope.baseUrl, match[1])
                 }
             )
         }
@@ -145,10 +146,15 @@ exports.buildDataUri = function(scope) {
 
         var dataUri = util.format('data:%s;base64,%s', mime.lookup(scope.elements[i].url), scope.elements[i].dataUri);
 
-        var img = $(scope.elements[i].tag).filter(function() {
-            return $(this).attr(scope.elements[i].attr) === scope.elements[i].url;
-        });
-        img.attr('src', dataUri);
+        if(scope.elements[i].tag == 'img') {
+            var img = $(scope.elements[i].tag).filter(function () {
+                return $(this).attr(scope.elements[i].attr) === scope.elements[i].url;
+            });
+            img.attr('src', dataUri);
+        }
+        else if(scope.elements[i].tag == 'style') {
+            $('head').append('<style>' + scope.elements[i].data + '</style>');
+        }
     }
 
     scope.html = $.html();

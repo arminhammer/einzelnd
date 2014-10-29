@@ -13,6 +13,7 @@ var helpers = require('../helpers/helpers.js');
 exports.getPage = function(urlArg) {
 
     var urlObj = url.parse(urlArg);
+    //console.log('base: ' + urlObj.host);
 
     // Determine the filename of the url.  If it is not in the path, assume index.html.
     var filename = urlObj.pathname.slice(urlObj.pathname.lastIndexOf('/') + 1);
@@ -24,6 +25,7 @@ exports.getPage = function(urlArg) {
 
     // Maintain the state of the file to ultimately be written
     var scope = {
+        baseUrl: 'http://' + urlObj.host,
         html: '',
         elements: [],
         inline: []
