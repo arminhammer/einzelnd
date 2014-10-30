@@ -81,7 +81,6 @@ exports.getPage = function(urlArg) {
         })
         // Notify the user
         .then(function () {
-
             console.log('Finished writing %s', filename);
 
         });
