@@ -2,7 +2,7 @@
  * Created by armin on 10/21/14.
  */
 
-getHelper = require('./helpers/get.js');
+get = require('./helpers/get.js');
 
 var program = require("commander");
 
@@ -22,7 +22,11 @@ program
     .description('Download a web page as a single-file archive')
     .action(function(url) {
         console.log(url);
-        getHelper.getPage(url);
+        get.getPage(url).then(function(file) {
+            console.log("File:");
+            console.log(file.toString());
+        });
+
     });
 
 program

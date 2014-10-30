@@ -4,13 +4,90 @@
 
 'use strict';
 
+var cheerio = require('cheerio');
 var url = require('url');
 var Promise = require('bluebird');
 var fs = Promise.promisifyAll(require('fs'), { suffix: 'PS' });
 var request = Promise.promisifyAll(require('request'), { suffix: 'PS' });
 var helpers = require('../helpers/helpers.js');
 
+
 exports.getPage = function(urlArg) {
+
+    return getPage(urlArg);
+
+};
+
+function getPage(urlArg) {
+
+    console.log('getPage: Starting %s', urlArg);
+
+    return new Promise(function(resolve, reject) {
+
+        var urlObj = url.parse(urlArg);
+
+        // Determine the filename of the url.  If it is not in the path, assume index.html.
+        var filename = urlObj.pathname.slice(urlObj.pathname.lastIndexOf('/') + 1);
+        if (filename === '') {
+            filename = 'index.html';
+        }
+
+        console.log(filename);
+
+        // Maintain the state of the file to ultimately be written
+        var scope = {
+            baseUrl: 'http://' + urlObj.host,
+            html: '',
+            elements: [],
+            inline: []
+        };
+
+        helpers.getHTTP(urlArg)
+            .then(function(response) {
+                return inlineAllCSS(response.body);
+            })
+            .then(function(html) {
+                resolve(html);
+            });
+
+        /*
+         getPage('http://localhost:3000/indexBrokenLinks.html').then(function(response) {
+         console.log("Response for subrequest is %s", response.response.statusCode);
+         helpers.getHTTP(urlArg)
+         .then(function(response) {
+         resolve(response);
+         });
+
+         })
+         */
+
+    });
+
+}
+
+function inlineAllCSS(html) {
+
+    return new Promise(function(resolve, reject) {
+
+        var $ = cheerio.load(html);
+        $('link').each(function() {
+            console.log("Found %s", $(this));
+        });
+        resolve(html);
+    });
+}
+
+function inlineCSS(url) {
+    return new Promise(function(resolve, reject) {
+
+        helpers.getHTTP(function(response) {
+            resolve(response.body);
+        });
+
+    });
+}
+
+exports.getPageOld = function(urlArg) {
 
     var urlObj = url.parse(urlArg);
     //console.log('base: ' + urlObj.host);
