@@ -161,7 +161,34 @@ exports.buildDataUri = function(scope) {
  * @param requestParam
  * @returns {Promise}
  */
-exports.getHTTP = function(link) {
+exports.getHTTP = function(url) {
+
+    //console.log('Starting %s', url.url);
+    return new helperPromise(function(resolve, reject) {
+        request.get({ url: url, encoding: null }, function (error, response, body) {
+
+            if(error) {
+                console.log('Error: ' + error);
+                console.log('Response status code ' + response.statusCode);
+                reject(error);
+            }
+
+            console.log('Status: %d', response.statusCode);
+            console.log('Size: %d', body.length);
+            resolve({ response: response, body: body});
+
+        });
+    });
+
+};
+
+
+/**
+ * Custom promise-wrap around request.get()
+ * @param requestParam
+ * @returns {Promise}
+ */
+exports.getHTTP1 = function(link) {
 
     console.log('Starting %s', link.url);
     return new helperPromise(function(resolve, reject) {
@@ -185,51 +212,3 @@ exports.getHTTP = function(link) {
     });
 
 };
-
-//NOT FINISHED
-/**
- * Custom promise-wrap around request.get() that saves JS and CSS resouces in-line in the html
- * @param requestParam
- * @returns {Promise}
- */
-/*
- exports.getInlineResourceHTTP = function(inlineResource, scope) {
-
- console.log('Starting %s', inlineResource.url);
- return new helperPromise(function(resolve, reject) {
- request.get({ url: inlineResource.url, encoding: null }, function (error, response, inlineResourceResponse) {
-
- if(error) {
- console.log('Error: ' + error);
- console.log('Response status code ' + response.statusCode);
- reject(error);
- }
-
- console.log('Status: %d', response.statusCode);
- console.log('Size: %d', inlineResourceResponse.length);
-
- var $ = cheerio.load(scope.html.toString());
-
- var res = $(inlineResource.tag).filter(function() {
- return $(this).attr(inlineResource.attr) === inlineResource.url;
- });
-
- console.log("Res: " + res.html());
-
- res.attr(inlineResource.attr, '');
- res.html(inlineResourceResponse);
-
- console.log("Res New: " + res.html());
-
-
- //inlineResource.data = new Buffer(inlineResourceResponse, 'binary').toString('base64');
-
- console.log('Finished %s', inlineResource.url);
- //console.log('Data URI created: %s', inlineResource.data.substring(0,100));
- resolve(inlineResource);
-
- });
- });
-
- };
- */

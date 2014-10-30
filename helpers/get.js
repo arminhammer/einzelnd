@@ -46,7 +46,7 @@ exports.getPage = function(urlArg) {
         .map(function(element) {
 
             console.log('Element %s', element.url);
-            return helpers.getHTTP(element);
+            return helpers.getHTTP1(element);
 
         })
         //
@@ -63,7 +63,7 @@ exports.getPage = function(urlArg) {
         .map(function(element) {
 
             console.log('Element %s', element.url);
-            return helpers.getHTTP(element);
+            return helpers.getHTTP1(element);
 
         })
         // Generate the dataUris and replace the img src urls with them

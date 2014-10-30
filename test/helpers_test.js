@@ -53,7 +53,7 @@ describe('helpers', function() {
 
     });
 
-    it('getHTTP should return a proper response', function() {
+    it('getHTTP1 should return a proper response', function() {
 
         var link = {};
         link.url = 'http://localhost:3000/img/image7.jpg';
@@ -65,7 +65,7 @@ describe('helpers', function() {
         var img = fs.readFileSync(filepath);
         testLink.data = new Buffer(img, 'binary').toString('base64');
 
-        return helpers.getHTTP(link).then(function (data) {
+        return helpers.getHTTP1(link).then(function (data) {
 
             expect(link.url).to.equal(testLink.url);
             expect(link.data.length).to.equal(testLink.data.length);
@@ -74,12 +74,12 @@ describe('helpers', function() {
     });
 
     /*
-    it('getHTTP report the broken link', function() {
+    it('getHTTP1 report the broken link', function() {
 
         var link = {};
         link.url = 'http://localhost:3000/img/image756.jpg';
 
-        return helpers.getHTTP(link).then(function (data) {
+        return helpers.getHTTP1(link).then(function (data) {
 
             console.log(link.data);
             //expect(link.url).to.equal(testLink.url);
