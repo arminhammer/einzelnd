@@ -67,7 +67,7 @@ function getPage(urlArg) {
 
 }
 
-function inlineAllCSS(html) {
+function inlineAllCSS(baseUrl, html) {
 
     return new Promise(function(resolve, reject) {
 
@@ -75,24 +75,40 @@ function inlineAllCSS(html) {
         var linkArray = [];
         $('link').each(function() {
             console.log("Found %s", $(this));
-            linkArray.push($(this).attr('href'));
+            var link = url.resolve(baseUrl, $(this).attr('href'));
+            console.log("Link is %s", link);
+            linkArray.push(link);
         });
 
-        Promise.each(linkArray, function(link) {
-            console.log("LINK: %s", url.resolve(link));
-        });
+        var cssString = '';
 
-        resolve(html);
+        Promise.map(linkArray, function(link) {
+            console.log("LINK: %s", link);
+            return inlineCSS(link)
+                .then(function(cssData) {
+                    console.log("cssData: %s", cssData);
+                    return cssString += cssData;
+                })
+        })
+            .then(function() {
+                console.log("CSSString:");
+                console.log(cssString);
+                $('head').append('<style>' + cssString + '</style>');
+                resolve($.html());
+            })
+
     });
 }
 
 function inlineCSS(url) {
+
     return new Promise(function(resolve, reject) {
 
         helpers.getHTTP(url)
             .then(function(response) {
-            resolve(response.body);
-        });
+                console.log("INLINE BODY: %s", response.body);
+                resolve(response.body);
+            });
 
     });
 }

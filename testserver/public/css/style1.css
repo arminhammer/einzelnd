@@ -1,0 +1,15 @@
+@import url("embed1.css");
+
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+h2 {
+    color: purple;
+}
+
+a {
+  color: #00B7FF;
+}
+
