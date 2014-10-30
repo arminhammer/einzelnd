@@ -25,6 +25,8 @@ function getPage(urlArg) {
     return new Promise(function(resolve, reject) {
 
         var urlObj = url.parse(urlArg);
+        var baseUrl = urlObj.protocol + '//' + urlObj.host;
+        console.log("Base URL: " + baseUrl);
 
         // Determine the filename of the url.  If it is not in the path, assume index.html.
         var filename = urlObj.pathname.slice(urlObj.pathname.lastIndexOf('/') + 1);
@@ -36,7 +38,7 @@ function getPage(urlArg) {
 
         // Maintain the state of the file to ultimately be written
         var scope = {
-            baseUrl: 'http://' + urlObj.host,
+            baseUrl: urlObj.protocol + '//' + urlObj.host,
             html: '',
             elements: [],
             inline: []
@@ -44,7 +46,7 @@ function getPage(urlArg) {
 
         helpers.getHTTP(urlArg)
             .then(function(response) {
-                return inlineAllCSS(response.body);
+                return inlineAllCSS(baseUrl, response.body);
             })
             .then(function(html) {
                 resolve(html);
@@ -70,9 +72,16 @@ function inlineAllCSS(html) {
     return new Promise(function(resolve, reject) {
 
         var $ = cheerio.load(html);
+        var linkArray = [];
         $('link').each(function() {
             console.log("Found %s", $(this));
+            linkArray.push($(this).attr('href'));
         });
+
+        Promise.each(linkArray, function(link) {
+            console.log("LINK: %s", url.resolve(link));
+        });
+
         resolve(html);
     });
 }
@@ -80,7 +89,8 @@ function inlineAllCSS(html) {
 function inlineCSS(url) {
     return new Promise(function(resolve, reject) {
 
-        helpers.getHTTP(function(response) {
+        helpers.getHTTP(url)
+            .then(function(response) {
             resolve(response.body);
         });
 
