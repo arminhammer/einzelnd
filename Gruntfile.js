@@ -88,9 +88,8 @@ module.exports = function (grunt) {
 				jshintrc: '.jshintrc'
 			},
 			all: [
-				'bin/*',
-				'cmds/*.js',
-                'helpers/helpers.js'
+				'einzelnd.js',
+                'helpers/*.js'
 			],
 			test: {
 				options: {

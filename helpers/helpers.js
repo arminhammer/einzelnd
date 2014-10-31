@@ -4,12 +4,27 @@
 'use strict';
 
 var cheerio = require('cheerio');
-var Promise = require('bluebird');
+var BPromise = require('bluebird');
 //var request = Promise.promisifyAll(require('request'), { suffix: 'PS' });
 var request = require('request');
 var util = require('util');
 var mime = require('mime');
 var url = require('url');
+
+var parseHTML = function(tag, attr, array) {
+
+    console.log('Adding %s to array', tag);
+
+    var item = tag;
+    var itemURL = item.attr(attr);
+    if(itemURL) {
+        array.push({
+            tag: tag[0].name,
+            attr: attr,
+            url: itemURL
+        });
+    }
+};
 
 /**
  * Get an array of all of the urls in img.src's on the page
@@ -23,24 +38,24 @@ exports.getMediaArray = function(scope) {
     console.log('Getting media');
 
     $('img').each(function() {
-        parseHTML($(this), 'src', scope.elements)
+        parseHTML($(this), 'src', scope.elements);
     });
 
     var re = /@import\surl\([\"|\']([\w|\/|\.]+)[\"|\']\)/g;
     //var match = [];
     $('style').each(function() {
-        console.log("CHECKING");
+        console.log('CHECKING');
         var body = $(this).html();
         var match = re.exec(body);
         if(match) {
-            console.log("FOUND match %s, length %d, first: %s", match, match.length, match[1]);
+            console.log('FOUND match %s, length %d, first: %s', match, match.length, match[1]);
             scope.elements.push(
                 {
                     tag: 'style',
                     attr: '',
                     url: url.resolve(scope.baseUrl, match[1])
                 }
-            )
+            );
         }
     });
 
@@ -75,27 +90,12 @@ exports.getInlineResources = function(scope) {
     });
 
     $('script').each(function() {
-        parseHTML($(this), 'src', scope.inline)
+        parseHTML($(this), 'src', scope.inline);
     });
 
     console.log(scope.inline);
     return scope.inline;
 
-};
-
-var parseHTML = function(tag, attr, array) {
-
-    console.log('Adding %s to array', tag);
-
-    var item = tag;
-    var itemURL = item.attr(attr);
-    if(itemURL) {
-        array.push({
-            tag: tag[0].name,
-            attr: attr,
-            url: itemURL
-        });
-    }
 };
 
 exports.mergeInlineResources = function(scope) {
@@ -110,10 +110,10 @@ exports.mergeInlineResources = function(scope) {
         });
         var parent = resource.parent();
         //console.log('resource is %s, parent is %s', resource, parent);
-        if(scope.inline[i].tag == 'link') {
+        if(scope.inline[i].tag === 'link') {
             parent.append('<style>' + scope.inline[i].data + '</style>');
         }
-        if(scope.inline[i].tag == 'script') {
+        if(scope.inline[i].tag === 'script') {
             parent.append('<script>' + scope.inline[i].data + '</script>');
         }
         resource.remove();
@@ -122,19 +122,6 @@ exports.mergeInlineResources = function(scope) {
     scope.html = $.html();
     return scope.html;
 
-};
-
-var parseInline = function(tag, attr) {
-
-    console.log('Adding %s to array', tag);
-
-    var item = tag;
-    return item.attr(attr);
-
-};
-
-var endsWith = function(str, suffix) {
-    return str.indexOf(suffix, str.length - suffix.length) !== -1;
 };
 
 /**
@@ -156,13 +143,13 @@ exports.buildDataUri = function(scope) {
 
         var dataUri = util.format('data:%s;base64,%s', mime.lookup(scope.elements[i].url), scope.elements[i].dataUri);
 
-        if(scope.elements[i].tag == 'img') {
+        if(scope.elements[i].tag === 'img') {
             var img = $(scope.elements[i].tag).filter(function () {
                 return $(this).attr(scope.elements[i].attr) === scope.elements[i].url;
             });
             img.attr('src', dataUri);
         }
-        else if(scope.elements[i].tag == 'style') {
+        else if(scope.elements[i].tag === 'style') {
             $('head').append('<style>' + scope.elements[i].data + '</style>');
         }
     }
@@ -180,7 +167,7 @@ exports.buildDataUri = function(scope) {
 exports.getHTTP = function(url) {
 
     //console.log('Starting %s', url.url);
-    return new Promise(function(resolve, reject) {
+    return new BPromise(function(resolve, reject) {
         request.get({ url: url, encoding: null }, function (error, response, body) {
 
             if(error) {
@@ -207,7 +194,7 @@ exports.getHTTP = function(url) {
 exports.getHTTP1 = function(link) {
 
     console.log('Starting %s', link.url);
-    return new Promise(function(resolve, reject) {
+    return new BPromise(function(resolve, reject) {
         request.get({ url: link.url, encoding: null }, function (error, response, data) {
 
             if(error) {

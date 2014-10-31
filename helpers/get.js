@@ -6,26 +6,151 @@
 
 var cheerio = require('cheerio');
 var url = require('url');
-var Promise = require('bluebird');
-var fs = Promise.promisifyAll(require('fs'), { suffix: 'PS' });
-var request = Promise.promisifyAll(require('request'), { suffix: 'PS' });
+var BPromise = require('bluebird');
+var fs = BPromise.promisifyAll(require('fs'), { suffix: 'PS' });
+var request = BPromise.promisifyAll(require('request'), { suffix: 'PS' });
 var helpers = require('../helpers/helpers.js');
 
-exports.getPage = function(urlArg) {
 
-    return getPage(urlArg);
+function inlineCSS(cssUrl) {
 
-};
+    return new BPromise(function(resolve) {
+
+        helpers.getHTTP(cssUrl)
+            .then(function(response) {
+
+                console.log('INLINE BODY: %s', response.body.length);
+                var re = /@import\surl\([\"|\']([\w|\/|\.]+)[\"|\']\)/g;
+                console.log('CHECKING');
+                var matches = helpers.getMatches(response.body.toString(), re);
+                console.log('Matches: ' + matches);
+                var embedCssString = '';
+
+                BPromise.map(matches, function(match) {
+
+                    var embedCssUrl = url.resolve(cssUrl, match);
+                    console.log(embedCssUrl);
+                    return inlineCSS(embedCssUrl)
+                        .then(function(embedBody) {
+                            console.log('Embed body: %s', embedBody);
+                            embedCssString += embedBody;
+                        });
+
+                })
+                    .then(function() {
+
+                        var combinedBody = response.body.toString() + embedCssString;
+                        resolve(combinedBody);
+
+                    });
+
+            });
+
+    });
+
+}
+
+// TODO: remove @embed url tags after inlining
+function inlineAllCSS(baseUrl, html) {
+
+    return new BPromise(function(resolve) {
+
+        var $ = cheerio.load(html);
+        var linkArray = [];
+
+        $('link').each(function() {
+
+            console.log('Found %s', $(this));
+            var link = url.resolve(baseUrl, $(this).attr('href'));
+            console.log('Link is %s', link);
+            linkArray.push(link);
+
+        });
+
+        var cssString = '';
+
+        BPromise.map(linkArray, function(link) {
+
+            console.log('LINK: %s', link);
+
+            return inlineCSS(link)
+                .then(function(cssData) {
+
+                    console.log('cssData: %s', cssData);
+                    return cssString += cssData;
+
+                });
+        })
+            .then(function() {
+
+                console.log('CSSString:');
+                console.log(cssString);
+                $('head').append('<style>\n' + cssString + '</style>\n');
+                resolve($.html());
+
+            });
+
+    });
+}
+
+// TODO: remove <script src=> tags after inlining
+function inlineScripts(baseUrl, html) {
+
+    return new BPromise(function(resolve) {
+
+        var $ = cheerio.load(html);
+        var linkArray = [];
+
+        $('script').each(function() {
+
+            if($(this).attr('src')) {
+
+                console.log('Found %s', $(this));
+                var link = url.resolve(baseUrl, $(this).attr('src'));
+                console.log('Link is %s', link);
+                linkArray.push(link);
+
+            }
+
+        });
+
+        console.log('Script array: %s', linkArray);
+
+        var scriptString = '';
+
+        BPromise.map(linkArray, function(link) {
+
+            console.log('Script: %s', link);
+
+            return helpers.getHTTP(link)
+                .then(function(scriptData) {
+
+                    console.log('scriptData: %s', scriptData.body);
+                    return scriptString += scriptData.body;
+
+                });
+        })
+            .then(function() {
+
+                console.log('scriptString:');
+                console.log(scriptString);
+                $('head').append('<script>\n' + scriptString + '</script>\n');
+                resolve($.html());
+
+            });
+
+    });
+}
 
 function getPage(urlArg) {
 
     console.log('getPage: Starting %s', urlArg);
 
-    return new Promise(function(resolve, reject) {
+    return new BPromise(function(resolve) {
 
         var urlObj = url.parse(urlArg);
         var baseUrl = urlObj.protocol + '//' + urlObj.host;
-        console.log("Base URL: " + baseUrl);
+        console.log('Base URL: ' + baseUrl);
 
         // Determine the filename of the url.  If it is not in the path, assume index.html.
         var filename = urlObj.pathname.slice(urlObj.pathname.lastIndexOf('/') + 1);
@@ -37,16 +162,6 @@ function getPage(urlArg) {
         }
 
         console.log(filename);
-
-        // Maintain the state of the file to ultimately be written
-        var scope = {
-
-            baseUrl: urlObj.protocol + '//' + urlObj.host,
-            html: '',
-            elements: [],
-            inline: []
-
-        };
 
         helpers.getHTTP(urlArg)
             .then(function(response) {
@@ -69,133 +184,11 @@ function getPage(urlArg) {
 
 }
 
-function inlineScripts(baseUrl, html) {
+exports.getPage = function(urlArg) {
 
-    return new Promise(function(resolve, reject) {
+    return getPage(urlArg);
 
-        var $ = cheerio.load(html);
-        var linkArray = [];
-
-        $('script').each(function() {
-
-            if($(this).attr('src')) {
-
-                console.log("Found %s", $(this));
-                var link = url.resolve(baseUrl, $(this).attr('src'));
-                console.log("Link is %s", link);
-                linkArray.push(link);
-
-            }
-
-        });
-
-        console.log("Script array: %s", linkArray);
-
-        var scriptString = '';
-
-        Promise.map(linkArray, function(link) {
-
-            console.log("Script: %s", link);
-
-            return helpers.getHTTP(link)
-                .then(function(scriptData) {
-
-                    console.log("scriptData: %s", scriptData.body);
-                    return scriptString += scriptData.body;
-
-                })
-        })
-            .then(function() {
-
-                console.log("scriptString:");
-                console.log(scriptString);
-                $('head').append('<script>\n' + scriptString + '</script>\n');
-                resolve($.html());
-
-            })
-
-    });
-}
-
-function inlineAllCSS(baseUrl, html) {
-
-    return new Promise(function(resolve, reject) {
-
-        var $ = cheerio.load(html);
-        var linkArray = [];
-
-        $('link').each(function() {
-
-            console.log("Found %s", $(this));
-            var link = url.resolve(baseUrl, $(this).attr('href'));
-            console.log("Link is %s", link);
-            linkArray.push(link);
-
-        });
-
-        var cssString = '';
-
-        Promise.map(linkArray, function(link) {
-
-            console.log("LINK: %s", link);
-
-            return inlineCSS(link)
-                .then(function(cssData) {
-
-                    console.log("cssData: %s", cssData);
-                    return cssString += cssData;
-
-                })
-        })
-            .then(function() {
-
-                console.log("CSSString:");
-                console.log(cssString);
-                $('head').append('<style>\n' + cssString + '</style>\n');
-                resolve($.html());
-
-            })
-
-    });
-}
-
-function inlineCSS(cssUrl) {
-
-    return new Promise(function(resolve, reject) {
-
-        helpers.getHTTP(cssUrl)
-            .then(function(response) {
-
-                console.log("INLINE BODY: %s", response.body.length);
-                var re = /@import\surl\([\"|\']([\w|\/|\.]+)[\"|\']\)/g;
-                console.log("CHECKING");
-                var matches = helpers.getMatches(response.body.toString(), re);
-                console.log('Matches: ' + matches);
-                var embedCssString = '';
-
-                Promise.map(matches, function(match) {
-
-                    var embedCssUrl = url.resolve(cssUrl, match);
-                    console.log(embedCssUrl);
-                    return inlineCSS(embedCssUrl)
-                        .then(function(embedBody) {
-                            console.log("Embed body: %s", embedBody);
-                            embedCssString += embedBody
-                        })
-
-                })
-                    .then(function() {
-
-                        var combinedBody = response.body.toString() + embedCssString;
-                        resolve(combinedBody);
-
-                    })
-
-            });
-
-    });
-
-}
+};
 
 exports.getPageOld = function(urlArg) {
 

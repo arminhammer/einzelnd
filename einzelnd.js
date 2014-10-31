@@ -2,9 +2,11 @@
  * Created by armin on 10/21/14.
  */
 
-get = require('./helpers/get.js');
+'use strict';
 
-var program = require("commander");
+var get = require('./helpers/get.js');
+
+var program = require('commander');
 
 program
     .version('0.0.1');
@@ -23,7 +25,7 @@ program
     .action(function(url) {
         console.log(url);
         get.getPage(url).then(function(file) {
-            console.log("File:");
+            console.log('File:');
             console.log(file.toString());
         });
 
