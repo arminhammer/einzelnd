@@ -11,7 +11,6 @@ var fs = Promise.promisifyAll(require('fs'), { suffix: 'PS' });
 var request = Promise.promisifyAll(require('request'), { suffix: 'PS' });
 var helpers = require('../helpers/helpers.js');
 
-
 exports.getPage = function(urlArg) {
 
     return getPage(urlArg);
@@ -93,24 +92,43 @@ function inlineAllCSS(baseUrl, html) {
             .then(function() {
                 console.log("CSSString:");
                 console.log(cssString);
-                $('head').append('<style>' + cssString + '</style>');
+                $('head').append('<style>\n' + cssString + '</style>\n');
                 resolve($.html());
             })
 
     });
 }
 
-function inlineCSS(url) {
+function inlineCSS(cssUrl) {
 
     return new Promise(function(resolve, reject) {
 
-        helpers.getHTTP(url)
+        helpers.getHTTP(cssUrl)
             .then(function(response) {
-                console.log("INLINE BODY: %s", response.body);
-                resolve(response.body);
+                console.log("INLINE BODY: %s", response.body.length);
+                var re = /@import\surl\([\"|\']([\w|\/|\.]+)[\"|\']\)/g;
+                console.log("CHECKING");
+                var matches = helpers.getMatches(response.body.toString(), re);
+                console.log('Matches: ' + matches);
+                var embedCssString = '';
+                Promise.map(matches, function(match) {
+                    var embedCssUrl = url.resolve(cssUrl, match);
+                    console.log(embedCssUrl);
+                    return inlineCSS(embedCssUrl)
+                        .then(function(embedBody) {
+                            console.log("Embed body: %s", embedBody);
+                            embedCssString += embedBody
+                        })
+                })
+                    .then(function() {
+                        var combinedBody = response.body.toString() + embedCssString;
+                        resolve(combinedBody);
+                    })
+
             });
 
     });
+
 }
 
 exports.getPageOld = function(urlArg) {
