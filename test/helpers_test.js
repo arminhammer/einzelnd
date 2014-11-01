@@ -26,68 +26,42 @@ describe('helpers', function() {
 
     });
 
-    it('getImageArray should return a correct image array', function() {
+    it('getMatches should return a correct array of matching strings', function() {
 
-        helpers.getImageArray(scope);
+        var re = /(match)/g;
+        var text = "This is a test text, with a match and another match, and here, another match";
+        var matches = helpers.getMatches(text,re);
 
-        expect(scope.elements.length).to.equal(10);
-
-    });
-
-    it('buildDataUri should replace the image urls with dataUris', function() {
-
-        var array = helpers.getImageArray(scope);
-
-        var result = helpers.buildDataUri(scope);
-
-        var $ = cheerio.load(result);
-        expect($('img').length).to.equal(9);
-
-        $('img').each(function() {
-
-            var url = $(this).attr('src');
-            expect(url).to.contain('data:image/jpeg;base64,');
-            //expect(url).not.toContain('undefined');
-
-        });
+        expect(matches.length).to.equal(3);
 
     });
 
-    it('getHTTP1 should return a proper response', function() {
+    it('getHTTP should return a proper response', function() {
 
-        var link = {};
-        link.url = 'http://localhost:3000/img/image7.jpg';
-
-        var testLink = {};
-        testLink.url = 'http://localhost:3000/img/image7.jpg';
+        var link = 'http://localhost:3000/img/image7.jpg';
 
         var filepath = path.join(__dirname, '../testserver/public/img/image7.jpg');
         var img = fs.readFileSync(filepath);
-        testLink.data = new Buffer(img, 'binary').toString('base64');
 
-        return helpers.getHTTP1(link).then(function (data) {
+        return helpers.getHTTP(link).then(function (response) {
 
-            expect(link.url).to.equal(testLink.url);
-            expect(link.data.length).to.equal(testLink.data.length);
+            expect(response.response.statusCode).to.equal(200);
+            expect(response.body.length).to.equal(img.length);
+
         });
 
     });
 
-    /*
-    it('getHTTP1 report the broken link', function() {
+    it('getHTTP report the broken link', function() {
 
-        var link = {};
-        link.url = 'http://localhost:3000/img/image756.jpg';
+        var link = 'http://localhost:3000/img/image756.jpg';
 
-        return modules.getHTTP1(link).then(function (data) {
+        return helpers.getHTTP(link).then(function (response) {
 
-            console.log(link.data);
-            //expect(link.url).to.equal(testLink.url);
-            //expect(link.data.length).to.equal(testLink.data.length);
+            expect(response.response.statusCode).to.equal(404);
+
         });
 
     });
-    */
-
 
 });

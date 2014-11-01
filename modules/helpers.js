@@ -30,12 +30,17 @@ exports.getHTTP = function(url) {
 
 };
 
-exports.getMatches = function(string, regex, index) {
-    index || (index = 1); // default to the first capturing group
+exports.getMatches = function(string, regex) {
+
     var matches = [];
     var match;
+
     while (match = regex.exec(string)) {
-        matches.push(match[index]);
+
+        matches.push(match[1]);
+
     }
+
     return matches;
+
 };
