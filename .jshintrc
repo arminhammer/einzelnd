@@ -18,5 +18,13 @@
     "trailing": true,
     "smarttabs": true,
     "white": true,
-    "loopfunc": true
+    "globals": {
+        /* MOCHA */
+        "describe": false,
+        "it": false,
+        "before": false,
+        "beforeEach": false,
+        "after": false,
+        "afterEach": false
+    }
 }

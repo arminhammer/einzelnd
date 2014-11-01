@@ -3,7 +3,6 @@
 var expect = require('expect.js');
 var path = require('path');
 var fs = require('fs');
-var cheerio = require('cheerio');
 
 var helpers = require('../modules/helpers.js');
 
@@ -29,7 +28,7 @@ describe('helpers', function() {
     it('getMatches should return a correct array of matching strings', function() {
 
         var re = /(match)/g;
-        var text = "This is a test text, with a match and another match, and here, another match";
+        var text = 'This is a test text, with a match and another match, and here, another match';
         var matches = helpers.getMatches(text,re);
 
         expect(matches.length).to.equal(3);
