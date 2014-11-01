@@ -5,9 +5,9 @@ var path = require('path');
 var fs = require('fs');
 var cheerio = require('cheerio');
 
-var helpers = require('../modules/helpers.js');
+var helpers = require('../modules/scripttags.js');
 
-describe('helpers', function() {
+describe('scripttags', function() {
 
     var filepath = path.join(__dirname, '../testserver/public/index.html');
     var scope;
@@ -26,6 +26,7 @@ describe('helpers', function() {
 
     });
 
+    /*
     it('getImageArray should return a correct image array', function() {
 
         helpers.getImageArray(scope);
@@ -72,7 +73,7 @@ describe('helpers', function() {
         });
 
     });
-
+    */
     /*
     it('getHTTP1 report the broken link', function() {
 
