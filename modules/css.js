@@ -25,6 +25,7 @@ function inlineCSS(cssUrl) {
 
                 BPromise.map(matches, function(match) {
 
+                    console.log('URL: %s, match: %s', cssUrl, match);
                     var embedCssUrl = url.resolve(cssUrl, match);
                     console.log(embedCssUrl);
                     return inlineCSS(embedCssUrl)
@@ -90,11 +91,13 @@ function inlineAllCSS(baseUrl, html) {
     });
 }
 
+/*
 exports.inlineCSS = function(cssUrl) {
 
     return inlineCSS(cssUrl);
 
 };
+*/
 
 // TODO: remove @embed url tags after inlining
 exports.inlineAllCSS = function(baseUrl, html) {

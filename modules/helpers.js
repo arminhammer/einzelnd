@@ -35,7 +35,7 @@ exports.getMatches = function(string, regex) {
     var matches = [];
     var match;
 
-    while ((match = regex.exec(string) !== null)) {
+    while (match = regex.exec(string)) {
 
         matches.push(match[1]);
 
