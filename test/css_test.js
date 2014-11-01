@@ -22,7 +22,7 @@ describe('css', function() {
             '</title>' +
             '<link rel="stylesheet" type="text/css" href="css/style1.css">' +
             '<style>' +
-            '\n@import url(\'embed3.css\')\n' +
+            '\n@import url(\'embed3.css\');\n' +
             '\nh2 {' +
             '\n    color: purple;' +
             '\n    font-size: 15px;' +

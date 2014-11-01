@@ -10,7 +10,9 @@ var program = require('commander');
 var fs = require('fs');
 
 program
-    .version('0.0.1');
+    .version('0.0.1')
+    .option('-a, --all', 'Download every link from the same site')
+    .option('--verbose', 'Print out detailed log information');
 
 program
     .on('*', function(name) {
@@ -25,7 +27,7 @@ program
     .description('Download a web page as a single-file archive')
     .action(function(url) {
         console.log(url);
-        get.getPage(url).then(function(file) {
+        get.getPage(url, program.all).then(function(file) {
             console.log('File:');
             //console.log(file.html.toString());
             fs.writeFile(file.filename, file.html);
