@@ -10,6 +10,7 @@ var helpers = require('./helpers.js');
 var css = require('./css');
 var scripts = require('./scripttags.js');
 var media = require('./media.js');
+var anchors = require('./anchors.js');
 
 /**
  * Download the page from urlArg.  If recursive is true, download all links that share the base url of the urlArg and
@@ -42,16 +43,6 @@ function getPage(urlArg, recursive) {
         helpers.getHTTP(urlArg)
             .then(function(response) {
 
-                if(recursive) {
-                    console.log("Recursive was chosen.");
-                    return response;
-                }
-                else {
-                    return response;
-                }
-            })
-            .then(function(response) {
-
                 return css.inlineAllCSS(urlArg, response.body);
 
             })
@@ -64,6 +55,20 @@ function getPage(urlArg, recursive) {
 
                 return media.processMedia(urlArg, html);
 
+            })
+            .then(function(html) {
+
+                if(recursive) {
+
+                    console.log("Recursive was chosen.");
+                    return anchors.getAnchors(urlArg, html);
+
+                }
+                else {
+
+                    return html;
+
+                }
             })
             .then(function(html) {
 
