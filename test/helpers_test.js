@@ -46,4 +46,18 @@ describe('helpers', function() {
 
     });
 
+    it('getHTTP should throw an error', function() {
+
+        var link = 'http://loasdsadcgsaddalhost:31232/';
+
+        return helpers.getHTTP(link)
+            .then(function() {
+
+            })
+            .catch(function(e) {
+                expect(e.toString()).to.equal('Error: getaddrinfo ENOTFOUND');
+            });
+
+    });
+
 });

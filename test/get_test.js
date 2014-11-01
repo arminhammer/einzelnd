@@ -1,60 +1,53 @@
 'use strict';
 
-var assert = require('assert');
-var exec = require('child_process').exec;
-var path = require('path');
+var expect = require('expect.js');
 
-var fs = require('fs');
+var get = require('../modules/get.js');
 
-var einGet = require('../modules/get.js');
+describe('get', function() {
 
-describe('einzelnd get', function() {
+    it('getPage should return the right file name', function() {
 
+        return get.getPage('http://localhost:3000/small.html')
+            .then(function (file) {
 
-    /*
-	it('should return a correct image array', function() {
+                return expect(file.filename).to.equal('small.html');
 
-        var filepath = path.join(__dirname, '../testserver/public/index.html');
-        var html = fs.readFileSync(filepath);
-        var array = einGet.getImageArray(html);
-        //var t = 2
-
-        expect(1+1).toEqual(2);
-
+            });
     });
 
-	iit('--help should run without errors', function(done) {
-		exec(cmd+'--help', function (error) {
-			assert(!error);
-			done();
-		});
-	});
+    it('getPage should set the filename to index.html if it is not explicit', function() {
 
-	iit('--version should run without errors', function(done) {
-		exec(cmd+'--version', function (error) {
-			assert(!error);
-			done();
-		});
-	});
+        return get.getPage('http://localhost:3000')
+            .then(function (file) {
 
-	iit('should return error on missing command', function(done) {
+                return expect(file.filename).to.equal('index.html');
 
-		exec(cmd, function (error) {
-			assert(error);
-			assert.equal(error.code,1);
-			done();
-		});
+            });
+    });
 
-	});
+    it('getPage should return an html page', function() {
 
-	iit('should return error on unknown command', function(done) {
+        var expectedHTML = '<!DOCTYPE html>' +
+            '\n<html>' +
+            '\n<head lang="en">' +
+            '\n    <meta charset="UTF-8">' +
+            '\n    <title>' +
+            '</title>' +
+            '\n<style>\n</style>\n<script>\n</script>\n' +
+            '</head>' +
+            '\n<body>' +
+            '\n\n</body>' +
+            '\n</html>\n';
 
-		exec(cmd+'junkcmd', function (error) {
-			assert(error);
-			assert.equal(error.code,1);
-			done();
-		});
-	});
-    */
+        return get.getPage('http://localhost:3000/small.html')
+            .then(function(file) {
+
+                return expect(file.html).to.equal(expectedHTML);
+
+
+            });
+
+    });
 
 });

@@ -37,4 +37,33 @@ describe('media', function() {
 
     });
 
+    it('processMedia should ignore img tags without src attributes', function() {
+
+        var html = '<html>' +
+            '<head><title>' +
+            '</title>' +
+            '</head>' +
+            '<body>' +
+            '<img>' +
+            '</body>' +
+            '</html>';
+
+        var expectedHTML = '<html>' +
+            '<head><title>' +
+            '</title>' +
+            '</head>' +
+            '<body>' +
+            '<img>' +
+            '</body>' +
+            '</html>';
+
+        return media.processMedia('http://localhost:3000', html)
+            .then(function(resultHTML) {
+
+                return expect(resultHTML).to.equal(expectedHTML);
+
+            });
+
+    });
+
 });

@@ -11,20 +11,18 @@ var request = require('request');
  */
 exports.getHTTP = function(url) {
 
-    //console.log('Starting %s', url.url);
     return new BPromise(function(resolve, reject) {
         request.get({ url: url, encoding: null }, function (error, response, body) {
 
             if(error) {
                 console.log('Error: ' + error);
-                console.log('Response status code ' + response.statusCode);
                 reject(error);
             }
-
-            console.log('Status: %d', response.statusCode);
-            console.log('Size: %d', body.length);
-            resolve({ response: response, body: body});
-
+            else {
+                console.log('Status: %d', response.statusCode);
+                console.log('Size: %d', body.length);
+                resolve({response: response, body: body});
+            }
         });
     });
 
