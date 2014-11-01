@@ -7,6 +7,7 @@
 var get = require('./helpers/get.js');
 
 var program = require('commander');
+var fs = require('fs');
 
 program
     .version('0.0.1');
@@ -26,8 +27,10 @@ program
         console.log(url);
         get.getPage(url).then(function(file) {
             console.log('File:');
-            console.log(file.toString());
-        });
+            //console.log(file.html.toString());
+            fs.writeFile(file.filename, file.html);
+
+        })
 
     });
 
