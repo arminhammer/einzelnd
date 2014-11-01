@@ -8,23 +8,6 @@ var helpers = require('../modules/helpers.js');
 
 describe('helpers', function() {
 
-    var filepath = path.join(__dirname, '../testserver/public/index.html');
-    var scope;
-
-    beforeEach(function() {
-
-        scope = {};
-        scope.html = fs.readFileSync(filepath);
-        scope.elements = [];
-
-    });
-
-    afterEach(function() {
-
-        scope = null;
-
-    });
-
     it('getMatches should return a correct array of matching strings', function() {
 
         var re = /(match)/g;
