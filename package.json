@@ -1,71 +1,68 @@
 {
-  "name": "einzelnd",
-  "version": "0.0.1",
-  "description": "A CLI app to download web resources into single-file archives",
-  "private": true,
-  "bin": {
-    "einzelnd": "./bin/einzelnd"
-  },
-  "scripts": {
-    "start": "node bin/einzelnd get http://www.supremecart.org",
-    "test": "istanbul cover --hook-run-in-context node_modules/mocha/bin/_mocha -- -R spec",
-    "test-single-run": "jasmine-node spec",
-    "preupdate-webdriver": "npm install",
-    "update-webdriver": "webdriver-manager update",
-    "preprotractor": "npm run update-webdriver",
-    "protractor": "protractor e2e-tests/protractor.conf.js",
-    "update-index-async": "node -e \"require('shelljs/global'); sed('-i', /\\/\\/@@NG_LOADER_START@@[\\s\\S]*\\/\\/@@NG_LOADER_END@@/, '//@@NG_LOADER_START@@\\n' + sed(/sourceMappingURL=angular-loader.min.js.map/,'sourceMappingURL=bower_components/angular-loader/angular-loader.min.js.map','app/bower_components/angular-loader/angular-loader.min.js') + '\\n//@@NG_LOADER_END@@', 'app/index-async.html');\""
-  },
-  "author": {
-    "name": "Armin Graf",
-    "email": "arminhammer@gmail.com",
-    "url": "https://github.com/arminhammer"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/arminhammer/einzelnd"
-  },
-  "license": "MIT",
-  "bugs": "https://github.com/arminhammer/einzelnd/issues",
-  "dependencies": {
-    "commander": "~2.4.0",
-    "bluebird": "~2.3.5",
-    "nomnom": "^1.8.0"
-  },
-  "devDependencies": {
-    "grunt": "~0.4.5",
-    "load-grunt-config": "~0.14.0",
-    "load-grunt-tasks": "~0.6.0",
-    "grunt-newer": "~0.8.0",
-    "grunt-contrib-uglify": "~0.6.0",
-    "grunt-contrib-clean": "~0.6.0",
-    "grunt-contrib-watch": "~0.6.1",
-    "request": "~2.45.0",
-    "cheerio": "~0.17.0",
-    "mime": "~1.2.11",
-    "jasmine-node": "~1.14.5",
-    "time-grunt": "~1.0.0",
-    "grunt-jasmine-node-coverage": "~0.1.11",
-    "istanbul": "~0.3.2",
-    "jshint-stylish": "~1.0.0",
-    "grunt-contrib-jshint": "~0.10.0",
-    "mocha": "^1.21.5",
-    "expect.js": "^0.3.1",
-    "grunt-mocha-test": "^0.12.1",
-    "grunt-blanket": "0.0.8",
-    "grunt-contrib-copy": "^0.7.0"
-  },
-  "config": {
-    "blanket": {
-      "pattern": [
-        "cmds",
-        "helpers",
-        "bin"
-      ],
-      "data-cover-never": [
-        "node_modules",
-        "test"
-      ]
+    "name": "einzelnd",
+    "version": "0.0.1",
+    "description": "A CLI app to download web resources into single-file archives",
+    "private": true,
+    "main": "einzelnd.js",
+    "scripts": {
+        "start": "node bin/einzelnd get http://www.supremecart.org",
+        "test": "istanbul cover --hook-run-in-context node_modules/mocha/bin/_mocha -- -R spec",
+        "test-single-run": "jasmine-node spec",
+        "preupdate-webdriver": "npm install",
+        "update-webdriver": "webdriver-manager update",
+        "preprotractor": "npm run update-webdriver",
+        "protractor": "protractor e2e-tests/protractor.conf.js",
+        "update-index-async": "node -e \"require('shelljs/global'); sed('-i', /\\/\\/@@NG_LOADER_START@@[\\s\\S]*\\/\\/@@NG_LOADER_END@@/, '//@@NG_LOADER_START@@\\n' + sed(/sourceMappingURL=angular-loader.min.js.map/,'sourceMappingURL=bower_components/angular-loader/angular-loader.min.js.map','app/bower_components/angular-loader/angular-loader.min.js') + '\\n//@@NG_LOADER_END@@', 'app/index-async.html');\""
+    },
+    "author": {
+        "name": "Armin Graf",
+        "email": "arminhammer@gmail.com",
+        "url": "https://github.com/arminhammer"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/arminhammer/einzelnd"
+    },
+    "license": "MIT",
+    "bugs": "https://github.com/arminhammer/einzelnd/issues",
+    "dependencies": {
+        "bluebird": "~2.3.5",
+        "cheerio": "^0.17.0",
+        "commander": "~2.4.0",
+        "request": "~2.45.0",
+        "mime": "~1.2.11"
+    },
+    "devDependencies": {
+        "grunt": "~0.4.5",
+        "load-grunt-config": "~0.14.0",
+        "load-grunt-tasks": "~0.6.0",
+        "grunt-newer": "~0.8.0",
+        "grunt-contrib-uglify": "~0.6.0",
+        "grunt-contrib-clean": "~0.6.0",
+        "grunt-contrib-watch": "~0.6.1",
+        "jasmine-node": "~1.14.5",
+        "time-grunt": "~1.0.0",
+        "grunt-jasmine-node-coverage": "~0.1.11",
+        "istanbul": "~0.3.2",
+        "jshint-stylish": "~1.0.0",
+        "grunt-contrib-jshint": "~0.10.0",
+        "mocha": "^1.21.5",
+        "expect.js": "^0.3.1",
+        "grunt-mocha-test": "^0.12.1",
+        "grunt-blanket": "0.0.8",
+        "grunt-contrib-copy": "^0.7.0"
+    },
+    "config": {
+        "blanket": {
+            "pattern": [
+                "cmds",
+                "helpers",
+                "bin"
+            ],
+            "data-cover-never": [
+                "node_modules",
+                "test"
+            ]
+        }
     }
-  }
 }

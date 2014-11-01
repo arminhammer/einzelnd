@@ -1,9 +1,6 @@
 'use strict';
 
 var expect = require('expect.js');
-var path = require('path');
-var fs = require('fs');
-var cheerio = require('cheerio');
 
 var css = require('../modules/css.js');
 
