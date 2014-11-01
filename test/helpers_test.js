@@ -5,7 +5,7 @@ var path = require('path');
 var fs = require('fs');
 var cheerio = require('cheerio');
 
-var helpers = require('../helpers/helpers.js');
+var helpers = require('./helpers.js');
 
 describe('helpers', function() {
 
@@ -79,7 +79,7 @@ describe('helpers', function() {
         var link = {};
         link.url = 'http://localhost:3000/img/image756.jpg';
 
-        return helpers.getHTTP1(link).then(function (data) {
+        return modules.getHTTP1(link).then(function (data) {
 
             console.log(link.data);
             //expect(link.url).to.equal(testLink.url);

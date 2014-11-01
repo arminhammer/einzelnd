@@ -4,7 +4,7 @@
 
 'use strict';
 
-var get = require('./helpers/get.js');
+var get = require('./modules/get.js');
 
 var program = require('commander');
 var fs = require('fs');
@@ -30,7 +30,7 @@ program
             //console.log(file.html.toString());
             fs.writeFile(file.filename, file.html);
 
-        })
+        });
 
     });
 

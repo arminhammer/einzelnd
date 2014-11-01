@@ -6,7 +6,7 @@ var path = require('path');
 
 var fs = require('fs');
 
-var einGet = require('../helpers/get.js');
+var einGet = require('./get.js');
 
 describe('einzelnd get', function() {
 

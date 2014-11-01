@@ -89,7 +89,7 @@ module.exports = function (grunt) {
 			},
 			all: [
 				'einzelnd.js',
-                'helpers/*.js'
+                'modules/*.js'
 			],
 			test: {
 				options: {
