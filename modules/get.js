@@ -61,7 +61,7 @@ function getPage(urlArg, recursive) {
                 if(recursive) {
 
                     console.log("Recursive was chosen.");
-                    return anchors.getAnchors(urlArg, html);
+                    return anchors.getAnchors(urlArg, filename, html);
 
                 }
                 else {

@@ -3,10 +3,7 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
-    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script lang="text/javascript">
-
-        var einzelnd = jQuery.noConflict();
 
         var page = {};
         page['index.html'] = '<!DOCTYPE html><html>' +
@@ -15,32 +12,25 @@
         '<body>' +
         '<p>Page 1</p>' +
         '<p>Blah Blah</p>' +
-        '<p><a href="#" onclick=einzelndOpenPage(page[\'page2.html\'])>Link</a></p>' +
+        '<p><a href="#" onclick=einzelndOpenPage(\'page2.html\')>Link</a></p>' +
         '</body>' +
         '</html>';
         page['page2.html'] = '<!DOCTYPE html><html>' +
         '<head lang="en"><meta charset="UTF-8"><title></title></head>' +
         '<body>' +
         '<p>Page 2</p>' +
-        '<p><a href="#" onclick=einzelndOpenPage(page[\'index.html\'])>Home</a></p>' +
+        '<p><a href="#" onclick=einzelndOpenPage(\'index.html\')>Home</a></p>' +
         '</body>' +
         '</html>';
 
-        function einzelndOpenPage(page) {
-            console.log("Opening page %s", page);
-            einzelnd('#einzelndDiv').html(page);
-        }
-
-        einzelnd(document).ready(function () {
-
-            console.log("Switching to " + page['index.html']);
-            einzelndOpenPage(page['index.html']);
-
-        });
+        var einzelndOpenPage = function(subPage) {
+            console.log("Opening page %s", subPage);
+            document.getElementById('einzelndDiv').innerHTML = page[subPage];
+        };
 
     </script>
 </head>
-<body>
+<body onload="einzelndOpenPage('index.html');">
 <div id="einzelndDiv"></div>
 </body>
 </html>
