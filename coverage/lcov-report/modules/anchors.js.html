@@ -199,16 +199,16 @@
     <h1>Code coverage report for <span class="entity">modules/anchors.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">33.33% <small>(4 / 12)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">27.78% <small>(5 / 18)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Branches: <span class="metric">0% <small>(0 / 2)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">0% <small>(0 / 4)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">0% <small>(0 / 6)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">33.33% <small>(4 / 12)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">27.78% <small>(5 / 18)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
@@ -251,12 +251,82 @@
 33
 34
 35
-36</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -293,7 +363,42 @@
 var cheerio = require('cheerio');
 var BPromise = require('bluebird');
 &nbsp;
-<span class="fstat-no" title="function not covered" >function getAnchors(baseUrl, html) {</span>
+<span class="fstat-no" title="function not covered" >function generateScript(html, filename) {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    return new BPromise(<span class="fstat-no" title="function not covered" >function(resolve) {</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        console.log('Process anchors');</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var basePage = '&lt;!DOCTYPE html&gt;' +</span>
+            '&lt;html&gt;' +
+            '&lt;head lang="en"&gt;' +
+            '&lt;meta charset="UTF-8"&gt;' +
+            '&lt;title&gt;&lt;/title&gt;' +
+            '&lt;/head&gt;' +
+            '&lt;body onload="einzelndOpenPage(\'' + filename + '\');"&gt;' +
+            '&lt;div id="einzelndDiv"&gt;&lt;/div&gt;' +
+            '&lt;/body&gt;' +
+            '&lt;/html&gt;';
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var $ = cheerio.load(basePage);</span>
+&nbsp;
+        /*
+        var baseScript = 'function einzelndOpenPage(page) {' +
+            'console.log("Opening page %s", page);' +
+            'einzelnd(\'#einzelndDiv\').html(page); ' +
+            '}' +
+            'einzelnd(document).ready(function () {' +
+            'console.log("Switching to " + page[\'' + filename + '\']);' +
+            'einzelndOpenPage(page[\'' + filename + '\']);' +
+            '});';
+        */
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        resolve($.html());</span>
+&nbsp;
+    });
+}
+&nbsp;
+<span class="fstat-no" title="function not covered" >function getAnchors(baseUrl, filename, html) {</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return new BPromise(<span class="fstat-no" title="function not covered" >function(resolve) {</span></span>
 &nbsp;
@@ -311,14 +416,14 @@ var BPromise = require('bluebird');
 &nbsp;
         });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        resolve($.html());</span>
+<span class="cstat-no" title="statement not covered" >        resolve(generateScript($.html(), filename));</span>
 &nbsp;
     });
 }
 &nbsp;
-exports.getAnchors = <span class="fstat-no" title="function not covered" >function(baseUrl, html) {</span>
+exports.getAnchors = <span class="fstat-no" title="function not covered" >function(baseUrl, filename, html) {</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    return getAnchors(baseUrl, html);</span>
+<span class="cstat-no" title="statement not covered" >    return getAnchors(baseUrl, filename, html);</span>
 &nbsp;
 }
 &nbsp;</pre></td></tr>
@@ -326,7 +431,7 @@ exports.getAnchors = <span class="fstat-no" title="function not covered" >functi
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun Nov 02 2014 12:01:34 GMT-0500 (EST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun Nov 02 2014 22:18:28 GMT-0500 (EST)</div>
 </div>
 
 <script src="../prettify.js"></script>

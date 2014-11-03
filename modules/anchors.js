@@ -4,6 +4,8 @@
 
 var cheerio = require('cheerio');
 var BPromise = require('bluebird');
+var get = require('./get.js');
+var url = require('url');
 
 function generateScript(html, filename) {
 
@@ -48,17 +50,53 @@ function getAnchors(baseUrl, filename, html) {
 
         var $ = cheerio.load(html);
 
+        var linksArray = [];
+
         $('a').each(function() {
 
             if($(this).attr('href')) {
 
                 console.log('Anchor: %s', $(this).attr('href'));
+                linksArray.push({ link: $(this).attr('href')});
 
             }
 
         });
 
-        resolve(generateScript($.html(), filename));
+        var pages = {};
+
+        BPromise.map(linksArray, function(link) {
+
+            console.log('Pages: %s', link.url);
+
+            var thisLink = url.resolve(baseUrl, link.link);
+            console.log('thisLink: %s, base link: %s', thisLink, baseUrl);
+            //if((baseUrl + '/' + filename) === thisLink) {
+            //    return;
+            //}
+            if(!pages[thisLink]) {
+
+                return get.getPage(url.resolve(baseUrl, link.link), false)
+                    .then(function (response) {
+
+                        //console.log('Got response %d, length %s', response.response.statusCode, response.body.length);
+                        console.log('Got response %s', response);
+                        pages[thisLink] = response.body;
+
+                    });
+            }
+            else {
+
+                console.log('%s is already in the array', thisLink);
+                return;
+
+            }
+        })
+            .then(function() {
+
+                resolve(generateScript($.html(), filename));
+
+            });
 
     });
 }
