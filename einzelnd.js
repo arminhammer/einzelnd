@@ -5,6 +5,7 @@
 'use strict';
 
 var get = require('./modules/get.js');
+var site = require('./modules/site.js');
 
 var program = require('commander');
 var fs = require('fs');
@@ -27,12 +28,26 @@ program
     .description('Download a web page as a single-file archive')
     .action(function(url) {
         console.log(url);
-        get.getPage(url, program.all).then(function(file) {
-            console.log('File:');
-            //console.log(file.html.toString());
-            fs.writeFile(file.filename, file.html);
+        if(program.all) {
 
-        });
+            site.getAll(url).then(function(file) {
+
+                console.log('Writing file %s', file.filename);
+                fs.writeFile(file.filename, file.html);
+
+            });
+
+        }
+        else {
+
+            get.getPage(url).then(function(file) {
+
+                console.log('Writing file %s', file.filename);
+                fs.writeFile(file.filename, file.html);
+
+            });
+
+        }
 
     });
 

@@ -4,6 +4,8 @@
 var BPromise = require('bluebird');
 var request = require('request');
 
+var url = require('url');
+
 /**
  * Custom promise-wrap around request.get()
  * @param requestParam
@@ -40,5 +42,12 @@ exports.getMatches = function(string, regex) {
     }
 
     return matches;
+
+};
+
+exports.getBaseUrl = function(urlArg) {
+
+    var urlObj = url.parse(urlArg);
+    return urlObj.protocol + '//' + urlObj.host;
 
 };

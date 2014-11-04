@@ -10,7 +10,6 @@ var helpers = require('./helpers.js');
 var css = require('./css');
 var scripts = require('./scripttags.js');
 var media = require('./media.js');
-var anchors = require('./anchors.js');
 
 /**
  * Download the page from urlArg.  If recursive is true, download all links that share the base url of the urlArg and
@@ -19,7 +18,7 @@ var anchors = require('./anchors.js');
  * @param recursive
  * @returns {Promise}
  */
-function getPage(urlArg, recursive) {
+function getPage(urlArg) {
 
     console.log('getPage: Starting %s', urlArg);
 
@@ -58,17 +57,8 @@ function getPage(urlArg, recursive) {
             })
             .then(function(html) {
 
-                if(recursive) {
+                return html;
 
-                    console.log("Recursive was chosen.");
-                    return anchors.getAnchors(urlArg, filename, html);
-
-                }
-                else {
-
-                    return html;
-
-                }
             })
             .then(function(html) {
 
@@ -80,8 +70,8 @@ function getPage(urlArg, recursive) {
 
 }
 
-exports.getPage = function(urlArg, recursive) {
+exports.getPage = function(urlArg) {
 
-    return getPage(urlArg, recursive);
+    return getPage(urlArg);
 
 };
