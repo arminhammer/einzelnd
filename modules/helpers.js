@@ -51,3 +51,25 @@ exports.getBaseUrl = function(urlArg) {
     return urlObj.protocol + '//' + urlObj.host;
 
 };
+
+exports.getFileName = function(urlArg) {
+
+    var urlObj = url.parse(urlArg);
+    var filename = urlObj.pathname.slice(urlObj.pathname.lastIndexOf('/') + 1);
+
+    if (filename === '') {
+
+        filename = 'index.html';
+
+    }
+
+    return filename;
+
+};
+
+exports.removeNewLines = function(string) {
+
+    var re = /\r?\n|\r/g;
+    return string.replace(re, ' ');
+
+};

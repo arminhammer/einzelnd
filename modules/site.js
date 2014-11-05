@@ -2,6 +2,8 @@
  * Created by armin on 11/1/14.
  */
 
+'use strict';
+
 var cheerio = require('cheerio');
 var BPromise = require('bluebird');
 var url = require('url');
@@ -9,7 +11,7 @@ var url = require('url');
 var get = require('./get.js');
 var helpers = require('./helpers.js');
 
-function generateScript(html, filename) {
+function generateScript(filename, pages) {
 
     return new BPromise(function(resolve) {
 
@@ -28,92 +30,99 @@ function generateScript(html, filename) {
 
         var $ = cheerio.load(basePage);
 
-        /*
-         var baseScript = 'function einzelndOpenPage(page) {' +
-         'console.log("Opening page %s", page);' +
-         'einzelnd(\'#einzelndDiv\').html(page); ' +
-         '}' +
-         'einzelnd(document).ready(function () {' +
-         'console.log("Switching to " + page[\'' + filename + '\']);' +
-         'einzelndOpenPage(page[\'' + filename + '\']);' +
-         '});';
-         */
+        var baseScript = 'pages = {}\n';
+
+        for (var page in pages) {
+            if (pages.hasOwnProperty(page)) {
+                baseScript += 'pages[\'' + page + '\'] = \'' + helpers.removeNewLines(pages[page]) + '\'\n';
+            }
+        }
+        baseScript += 'var einzelndOpenPage = function(subPage) {\n' +
+            'console.log("Opening page %s", subPage);\n' +
+            'document.getElementById("einzelndDiv").innerHTML = pages[subPage];\n' +
+            '};\n';
+
+        $('head').append('<script lang="text/javascript">\n' + baseScript + '</script>\n');
 
         resolve($.html());
 
     });
 }
 
-function getAnchors(baseUrl, filename, html, pages) {
 
-    return new BPromise(function(resolve) {
+/*
+ function getAnchors(baseUrl, filename, html, pages) {
 
-        console.log('Process anchors');
+ return new BPromise(function(resolve) {
 
-        var $ = cheerio.load(html);
+ console.log('Process anchors');
 
-        var linksArray = [];
+ var $ = cheerio.load(html);
 
-        $('a').each(function() {
+ var linksArray = [];
 
-            if($(this).attr('href')) {
+ $('a').each(function() {
 
-                console.log('Anchor: %s', $(this).attr('href'));
-                linksArray.push({ link: $(this).attr('href')});
+ if($(this).attr('href')) {
 
-            }
+ console.log('Anchor: %s', $(this).attr('href'));
+ linksArray.push({ link: $(this).attr('href')});
 
-        });
+ }
 
-        if(pages == null) {
+ });
 
-            var pages = {};
+ if(pages === null) {
 
-        }
+ pages = {};
 
-        BPromise.map(linksArray, function(link) {
+ }
 
-            console.log('Pages: %s', link.url);
+ BPromise.map(linksArray, function(link) {
 
-            var thisLink = url.resolve(baseUrl, link.link);
-            console.log('thisLink: %s, base link: %s', thisLink, baseUrl);
-            //if((baseUrl + '/' + filename) === thisLink) {
-            //    return;
-            //}
-            if(pages[thisLink] == null) {
+ console.log('Pages: %s', link.url);
 
-                return get.getPage(url.resolve(baseUrl, link.link), true, pages)
-                    .then(function (response) {
+ var thisLink = url.resolve(baseUrl, link.link);
+ console.log('thisLink: %s, base link: %s', thisLink, baseUrl);
+ //if((baseUrl + '/' + filename) === thisLink) {
+ //    return;
+ //}
+ if(pages[thisLink] === null) {
 
-                        //console.log('Got response %d, length %s',
-                        // response.response.statusCode, response.body.length);
-                        console.log('Got response %s ', response.html);
+ return get.getPage(url.resolve(baseUrl, link.link), true, pages)
+ .then(function (response) {
 
-                        pages[thisLink] = response.html;
+ //console.log('Got response %d, length %s',
+ // response.response.statusCode, response.body.length);
+ console.log('Got response %s ', response.html);
 
-                    });
-            }
-            else {
+ pages[thisLink] = response.html;
 
-                console.log('%s is already in the array', thisLink);
-                return;
+ });
+ }
+ else {
 
-            }
-        })
-            .then(function() {
+ console.log('%s is already in the array', thisLink);
+ return;
 
-                resolve(generateScript($.html(), filename));
+ }
+ })
+ .then(function() {
 
-            });
+ resolve(generateScript($.html(), filename));
 
-    });
-}
+ });
 
-exports.getAnchors = function(baseUrl, filename, html, pages) {
+ });
+ }
+ */
+/*
+ exports.getAnchors = function(baseUrl, filename, html, pages) {
 
-    return getAnchors(baseUrl, filename, html, pages);
+ return getAnchors(baseUrl, filename, html, pages);
 
-};
+ };
+ */
 
 function recursiveGetPage(baseUrl, pageUrl, pages) {
 
@@ -124,7 +133,7 @@ function recursiveGetPage(baseUrl, pageUrl, pages) {
 
                 var $ = cheerio.load(file.html);
 
-                if (pages == null) {
+                if (!pages) {
 
                     pages = {};
 
@@ -139,7 +148,7 @@ function recursiveGetPage(baseUrl, pageUrl, pages) {
                     if ($(this).attr('href')) {
 
                         console.log('Anchor: %s', $(this).attr('href'));
-                        if (url.resolve(baseUrl, $(this).attr('href')) != baseUrl) {
+                        if (url.resolve(baseUrl, $(this).attr('href')) !== baseUrl) {
 
                             linkArray.push(url.resolve(baseUrl, $(this).attr('href')));
 
@@ -180,9 +189,18 @@ exports.getAll = function(pageUrl) {
         //var baseUrl = helpers.getBaseUrl(pageUrl);
         recursiveGetPage(pageUrl, pageUrl)
             .then(function(pages) {
+
                 console.log('Pages');
                 console.log(pages);
-                resolve({ filename: 'recursive.html', html: pages });
+
+                var filename = helpers.getFileName(pageUrl);
+                generateScript(filename, pages)
+                    .then(function(html) {
+
+                        resolve({ filename: filename, html: html });
+
+                    });
+
             });
 
     });
