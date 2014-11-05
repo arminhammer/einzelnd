@@ -67,9 +67,23 @@ exports.getFileName = function(urlArg) {
 
 };
 
-exports.removeNewLines = function(string) {
+function splitScriptTag(string) {
+
+    var re = /<\/script>/g;
+    return string.replace(re, '<\'+\'/script>');
+
+}
+
+function removeNewLines(string) {
 
     var re = /\r?\n|\r/g;
-    return string.replace(re, ' ');
+    return string.replace(re, '');
+
+}
+
+exports.fixString = function(string) {
+
+    string = splitScriptTag(string);
+    return removeNewLines(string);
 
 };
