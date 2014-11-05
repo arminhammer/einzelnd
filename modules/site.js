@@ -119,49 +119,57 @@ function recursiveGetPage(baseUrl, pageUrl, pages) {
 
     return new BPromise(function(resolve) {
 
-        if (url.resolve(baseUrl, pageUrl) != baseUrl) {
+        get.getPage(pageUrl)
+            .then(function (file) {
 
-            get.getPage(pageUrl)
-                .then(function (file) {
+                var $ = cheerio.load(file.html);
 
-                    var $ = cheerio.load(file.html);
+                if (pages == null) {
 
-                    if (pages == null) {
+                    pages = {};
 
-                        var pages = {};
+                }
 
-                    }
+                pages[file.filename] = file.html;
 
-                    pages[file.filename] = file.html;
+                var linkArray = [];
 
-                    $('a').each(function () {
+                $('a').each(function () {
 
-                        if ($(this).attr('href')) {
+                    if ($(this).attr('href')) {
 
-                            console.log('Anchor: %s', $(this).attr('href'));
-                            recursiveGetPage(baseUrl, url.resolve(baseUrl, $(this).attr('href')))
-                                .then(function(subPages) {
-                                    for (var name in subPages) {
-                                        if (subPages.hasOwnProperty(name)) {
-                                            pages[name] = subPages[name];
-                                        }
-                                    }
+                        console.log('Anchor: %s', $(this).attr('href'));
+                        if (url.resolve(baseUrl, $(this).attr('href')) != baseUrl) {
 
-
-                                });
+                            linkArray.push(url.resolve(baseUrl, $(this).attr('href')));
 
                         }
 
-                    });
-
-                    resolve(pages);
+                    }
 
                 });
 
-        }
-        else {
-            resolve(pages);
-        }
+                console.log('Links');
+                console.log(linkArray);
+
+                BPromise.map(linkArray, function(link) {
+                    return recursiveGetPage(baseUrl, link, pages)
+                        .then(function (subPages) {
+                            for (var name in subPages) {
+                                if (subPages.hasOwnProperty(name)) {
+                                    pages[name] = subPages[name];
+                                }
+                            }
+                            return pages;
+                        });
+                })
+                    .then(function() {
+
+                        resolve(pages);
+
+                    });
+
+            });
     });
 }
 
@@ -169,8 +177,8 @@ exports.getAll = function(pageUrl) {
 
     return new BPromise(function(resolve) {
 
-        var baseUrl = helpers.getBaseUrl(pageUrl);
-        recursiveGetPage(baseUrl, pageUrl)
+        //var baseUrl = helpers.getBaseUrl(pageUrl);
+        recursiveGetPage(pageUrl, pageUrl)
             .then(function(pages) {
                 console.log('Pages');
                 console.log(pages);
