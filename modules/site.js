@@ -52,81 +52,6 @@ function generateScript(filename, pages) {
     });
 }
 
-
-/*
- function getAnchors(baseUrl, filename, html, pages) {
-
- return new BPromise(function(resolve) {
-
- console.log('Process anchors');
-
- var $ = cheerio.load(html);
-
- var linksArray = [];
-
- $('a').each(function() {
-
- if($(this).attr('href')) {
-
- console.log('Anchor: %s', $(this).attr('href'));
- linksArray.push({ link: $(this).attr('href')});
-
- }
-
- });
-
- if(pages === null) {
-
- pages = {};
-
- }
-
- BPromise.map(linksArray, function(link) {
-
- console.log('Pages: %s', link.url);
-
- var thisLink = url.resolve(baseUrl, link.link);
- console.log('thisLink: %s, base link: %s', thisLink, baseUrl);
- //if((baseUrl + '/' + filename) === thisLink) {
- //    return;
- //}
- if(pages[thisLink] === null) {
-
- return get.getPage(url.resolve(baseUrl, link.link), true, pages)
- .then(function (response) {
-
- //console.log('Got response %d, length %s',
- // response.response.statusCode, response.body.length);
- console.log('Got response %s ', response.html);
-
- pages[thisLink] = response.html;
-
- });
- }
- else {
-
- console.log('%s is already in the array', thisLink);
- return;
-
- }
- })
- .then(function() {
-
- resolve(generateScript($.html(), filename));
-
- });
-
- });
- }
- */
-/*
- exports.getAnchors = function(baseUrl, filename, html, pages) {
-
- return getAnchors(baseUrl, filename, html, pages);
-
- };
- */
-
 function recursiveGetPage(baseUrl, pageUrl, pages) {
 
     return new BPromise(function(resolve) {
@@ -185,11 +110,22 @@ function recursiveGetPage(baseUrl, pageUrl, pages) {
     });
 }
 
+exports.generateScript = function(filename, pages) {
+
+    return generateScript(filename, pages);
+
+};
+
+exports.recursiveGetPage = function(baseUrl, pageUrl, pages) {
+
+    recursiveGetPage(baseUrl, pageUrl, pages);
+
+};
+
 exports.getAll = function(pageUrl) {
 
     return new BPromise(function(resolve) {
 
-        //var baseUrl = helpers.getBaseUrl(pageUrl);
         recursiveGetPage(pageUrl, pageUrl)
             .then(function(pages) {
 
