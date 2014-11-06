@@ -5,9 +5,9 @@
 <title></title>
 <script lang="text/javascript">
 var pages = {};
-pages['recursive1.html'] = '<!DOCTYPE html><html><head lang="en">    <meta charset="UTF-8">    <title></title><style></style><script><'+'/script></head><body><a href="recursive2.html">Link</a></body></html>';
-pages['recursive2.html'] = '<!DOCTYPE html><html><head lang="en">    <meta charset="UTF-8">    <title></title><style></style><script><'+'/script></head><body><a href="recursive3.html">Link</a></body></html>';
-pages['recursive3.html'] = '<!DOCTYPE html><html><head lang="en">    <meta charset="UTF-8">    <title></title><style></style><script><'+'/script></head><body><a href="recursive1.html">Link</a></body></html>';
+pages['recursive1.html'] = '<!DOCTYPE html><html><head lang="en">    <meta charset="UTF-8">    <title></title><style></style><script><'+'/script></head><body><p>Page Recursive 1</p><a href="#" onclick="einzelndOpenPage(\'recursive2.html\')">Link</a></body></html>';
+pages['recursive2.html'] = '<!DOCTYPE html><html><head lang="en">    <meta charset="UTF-8">    <title></title><style></style><script><'+'/script></head><body><p>Page Recursive 2</p><a href="#" onclick="einzelndOpenPage(\'recursive3.html\')">Link</a></body></html>';
+pages['recursive3.html'] = '<!DOCTYPE html><html><head lang="en">    <meta charset="UTF-8">    <title></title><style></style><script><'+'/script></head><body><p>Page Recursive 3</p><a href="#" onclick="einzelndOpenPage(\'recursive1.html\')">Link</a></body></html>';
 
 var einzelndOpenPage = function(subPage) {
 console.log("Opening page %s", subPage);

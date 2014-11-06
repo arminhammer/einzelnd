@@ -199,16 +199,16 @@
     <h1>Code coverage report for <span class="entity">modules/helpers.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">74.07% <small>(20 / 27)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">56.82% <small>(25 / 44)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Branches: <span class="metric">50% <small>(2 / 4)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">66.67% <small>(4 / 6)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">36.36% <small>(4 / 11)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">74.07% <small>(20 / 27)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">56.82% <small>(25 / 44)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
@@ -284,9 +284,48 @@
 66
 67
 68
-69</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107</td><td class="line-coverage"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -352,11 +391,49 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&nbsp;
 'use strict';
 &nbsp;
 var BPromise = require('bluebird');
 var request = require('request');
+var cheerio = require('cheerio');
 &nbsp;
 var url = require('url');
 &nbsp;
@@ -420,12 +497,49 @@ exports.getFileName = <span class="fstat-no" title="function not covered" >funct
 <span class="cstat-no" title="statement not covered" >    return filename;</span>
 &nbsp;
 };
+&nbsp;
+<span class="fstat-no" title="function not covered" >function splitScriptTag(string) {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    var re = /&lt;\/script&gt;/g;</span>
+<span class="cstat-no" title="statement not covered" >    return string.replace(re, '&lt;\'+\'/script&gt;');</span>
+&nbsp;
+}
+&nbsp;
+<span class="fstat-no" title="function not covered" >function removeNewLines(string) {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    var re = /\r?\n|\r/g;</span>
+<span class="cstat-no" title="statement not covered" >    return string.replace(re, '');</span>
+&nbsp;
+}
+&nbsp;
+exports.fixString = <span class="fstat-no" title="function not covered" >function(string) {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    string = splitScriptTag(string);</span>
+<span class="cstat-no" title="statement not covered" >    return removeNewLines(string);</span>
+&nbsp;
+};
+&nbsp;
+exports.modifyLinks = <span class="fstat-no" title="function not covered" >function(page) {</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    var $ = cheerio.load(page, {decodeEntities: false});</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    $('a').each(<span class="fstat-no" title="function not covered" >function() {</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >       var link = $(this).attr('href');</span>
+<span class="cstat-no" title="statement not covered" >        $(this).attr('href', '#');</span>
+<span class="cstat-no" title="statement not covered" >        $(this).attr('onclick', 'einzelndOpenPage(\\\'' + link + '\\\')');</span>
+&nbsp;
+    });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    return $.html();</span>
+&nbsp;
+};
 &nbsp;</pre></td></tr>
 </table></pre>
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Nov 04 2014 22:08:04 GMT-0500 (EST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Nov 05 2014 20:52:35 GMT-0500 (EST)</div>
 </div>
 
 <script src="../prettify.js"></script>

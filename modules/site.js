@@ -7,7 +7,6 @@
 var cheerio = require('cheerio');
 var BPromise = require('bluebird');
 var url = require('url');
-var util = require('util');
 
 var get = require('./get.js');
 var helpers = require('./helpers.js');
@@ -28,7 +27,8 @@ function generateScript(filename, pages) {
         for (var page in pages) {
             if (pages.hasOwnProperty(page)) {
                 //basePage += 'pages[\'' + page + '\'] = \'' + helpers.removeNewLines(pages[page]) + '\';\n';
-                basePage += 'pages[\'' + page + '\'] = \'' + helpers.fixString(pages[page]) + '\';\n';
+                var modPage = helpers.modifyLinks(pages[page]);
+                basePage += 'pages[\'' + page + '\'] = \'' + helpers.fixString(modPage) + '\';\n';
             }
         }
 
@@ -44,30 +44,9 @@ function generateScript(filename, pages) {
          '</body>\n' +
          '</html>\r\n';
 
-        console.log("FINISHED PAGE:");
+        console.log('FINISHED PAGE:');
         console.log(basePage);
 
-        /*
-        var $ = cheerio.load(basePage);
-
-        var baseScript = 'var pages = {};\n';
-
-        for (var page in pages) {
-            if (pages.hasOwnProperty(page)) {
-                baseScript += 'pages\[\'' + page + '\'\] = \'\';';
-                //baseScript += helpers.removeNewLines(pages[page]);
-                baseScript += '\'\n';
-            }
-        }
-        baseScript += 'var einzelndOpenPage = function(subPage) {\n' +
-        'console.log("Opening page %s", subPage);\n' +
-        'document.getElementById("einzelndDiv").innerHTML = pages[subPage];\n' +
-        '};\n';
-
-        $('head').append('<script lang="text/javascript">\n' + baseScript + '</script>\n');
-
-        resolve($.html());
-        */
         resolve(basePage);
 
     });

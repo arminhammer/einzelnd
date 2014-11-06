@@ -3,6 +3,7 @@
 
 var BPromise = require('bluebird');
 var request = require('request');
+var cheerio = require('cheerio');
 
 var url = require('url');
 
@@ -85,5 +86,21 @@ exports.fixString = function(string) {
 
     string = splitScriptTag(string);
     return removeNewLines(string);
+
+};
+
+exports.modifyLinks = function(page) {
+
+    var $ = cheerio.load(page, {decodeEntities: false});
+
+    $('a').each(function() {
+
+       var link = $(this).attr('href');
+        $(this).attr('href', '#');
+        $(this).attr('onclick', 'einzelndOpenPage(\\\'' + link + '\\\')');
+
+    });
+
+    return $.html();
 
 };
