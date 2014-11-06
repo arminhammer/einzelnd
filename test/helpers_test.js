@@ -60,4 +60,32 @@ describe('helpers', function() {
 
     });
 
+    it('getFileName should return the right file name', function() {
+
+        var filename = helpers.getFileName('http://localhost:3000/small.html');
+        expect(filename).to.equal('small.html');
+
+    });
+
+    it('getFileName should set the filename to index.html if it is not explicit', function() {
+
+        var filename = helpers.getFileName('http://localhost:3000');
+        expect(filename).to.equal('index.html');
+
+    });
+
+    it('fixString should return a fixed/escaped script /script tag', function() {
+
+        var fixedString = helpers.fixString('<script></script>');
+        expect(fixedString).to.equal('<script><\'+\'/script>');
+
+    });
+
+    it('modifyLinks should return a modified a tag', function() {
+
+        var modifiedString = helpers.modifyLinks('<a href="index.html"></a>');
+        expect(modifiedString).to.equal('<a href="#" onclick="einzelndOpenPage(\\\'index.html\\\')"></a>');
+
+    });
+
 });

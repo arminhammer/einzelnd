@@ -28,14 +28,7 @@ function getPage(urlArg) {
         var baseUrl = urlObj.protocol + '//' + urlObj.host;
         console.log('Base URL: ' + baseUrl);
 
-        // Determine the filename of the url.  If it is not in the path, assume index.html.
-        var filename = urlObj.pathname.slice(urlObj.pathname.lastIndexOf('/') + 1);
-
-        if (filename === '') {
-
-            filename = 'index.html';
-
-        }
+        var filename = helpers.getFileName(urlArg);
 
         console.log(filename);
 

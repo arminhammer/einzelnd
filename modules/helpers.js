@@ -46,13 +46,6 @@ exports.getMatches = function(string, regex) {
 
 };
 
-exports.getBaseUrl = function(urlArg) {
-
-    var urlObj = url.parse(urlArg);
-    return urlObj.protocol + '//' + urlObj.host;
-
-};
-
 exports.getFileName = function(urlArg) {
 
     var urlObj = url.parse(urlArg);
@@ -68,24 +61,13 @@ exports.getFileName = function(urlArg) {
 
 };
 
-function splitScriptTag(string) {
-
-    var re = /<\/script>/g;
-    return string.replace(re, '<\'+\'/script>');
-
-}
-
-function removeNewLines(string) {
-
-    var re = /\r?\n|\r/g;
-    return string.replace(re, '');
-
-}
-
 exports.fixString = function(string) {
 
-    string = splitScriptTag(string);
-    return removeNewLines(string);
+    var re = /<\/script>/g;
+    string = string.replace(re, '<\'+\'/script>');
+    var re2 = /\r?\n|\r/g;
+
+    return string.replace(re2, '');
 
 };
 
