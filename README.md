@@ -3,7 +3,9 @@ einzelnd
 
 # Description
 
-A CLI app to download web resources into single-file archives
+A CLI app to download web resources into single-file archives.
+
+This project is still very experimental.  It is an exploration to see what extent a multi-page archive with media can be embedded into a single file.
 
 # Usage
 
