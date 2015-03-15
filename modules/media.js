@@ -11,6 +11,9 @@ var helpers = require('./helpers.js');
 var util = require('util');
 var mime = require('mime');
 
+/*
+Turn images into in-lined data uris
+ */
 function processMedia(baseUrl, html) {
 
     return new BPromise(function(resolve) {

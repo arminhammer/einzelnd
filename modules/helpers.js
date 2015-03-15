@@ -31,6 +31,9 @@ exports.getHTTP = function(url) {
 
 };
 
+/*
+ Regex helper function
+ */
 exports.getMatches = function(string, regex) {
 
     var matches = [];
@@ -46,6 +49,9 @@ exports.getMatches = function(string, regex) {
 
 };
 
+/*
+Get the file name from a url
+ */
 exports.getFileName = function(urlArg) {
 
     var urlObj = url.parse(urlArg);
@@ -61,6 +67,9 @@ exports.getFileName = function(urlArg) {
 
 };
 
+/*
+Make sure to escape <script> tags in the input file
+ */
 exports.fixString = function(string) {
 
     var re = /<\/script>/g;
@@ -71,6 +80,9 @@ exports.fixString = function(string) {
 
 };
 
+/*
+Modify links so that they are accessible in the master output page.
+ */
 exports.modifyLinks = function(page) {
 
     var $ = cheerio.load(page, {decodeEntities: false});

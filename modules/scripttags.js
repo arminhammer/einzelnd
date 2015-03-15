@@ -9,6 +9,9 @@ var url = require('url');
 var BPromise = require('bluebird');
 var helpers = require('./helpers.js');
 
+/*
+Take javascript scripts and in-line them.
+ */
 // TODO: remove <script src=> tags after inlining
 function inlineScripts(baseUrl, html) {
 

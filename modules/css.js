@@ -9,6 +9,9 @@ var BPromise = require('bluebird');
 var cheerio = require('cheerio');
 var helpers = require('./helpers.js');
 
+/*
+Get the contents of a css file, and inline it into the main html file.
+ */
 function inlineCSS(cssUrl) {
 
     return new BPromise(function(resolve) {
@@ -48,6 +51,9 @@ function inlineCSS(cssUrl) {
 
 }
 
+/*
+    Process all css links on a page, and in-line them
+ */
 // TODO: remove @embed url tags after inlining
 function inlineAllCSS(baseUrl, html) {
 
